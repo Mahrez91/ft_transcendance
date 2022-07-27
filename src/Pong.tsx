@@ -7,9 +7,11 @@ function Pong() {
     <h1 id="pong">Pong</h1>
     <main>
         <canvas id="canvas" width="740" height="580"></canvas>
+        <p id ="score">0</p>
     </main>
     <p id ="texte">WELCOME TO THE PONG !</p>
-    <p id ="play">Click to play</p>
+    <p id ="play">Click here to play</p>
+    <p id ="launch">launch the game</p>
     </body>
   );
 }
@@ -19,11 +21,17 @@ function Pong() {
 window.addEventListener("load", function () {
     let canvas: any;
     let game: any;
+    let score : any = this.document.querySelector("#score");
+    let score1 : number = 0;
     let PLAYER_HEIGHT: number = 100;
     let PLAYER_WIDTH: number = 5;
     let text: any = document.querySelector("#texte");
     let pong: any = document.querySelector("#pong");
     let click: any = document.querySelector("#play");
+    let launch: any = document.querySelector("#launch");
+
+    launch.style.display = "none";
+    score.style.color = "red";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "Apple Chancery";
@@ -33,8 +41,7 @@ window.addEventListener("load", function () {
     click.style.textAlign = "center";
     click.style.fontSize = "250%";
     click.style.fontFamily = "Apple Chancery";
-    //canvas.style.textAlign = "center";
-    console.log("gildas le pd");
+
     function draw() {
         console.log("gildas le bg");
         var context = canvas.getContext('2d');
@@ -57,32 +64,33 @@ window.addEventListener("load", function () {
         context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
         context.fill();
     }
-        function ballMove() {
-          // Rebounds on top and bottom
-          if (game.ball.y > canvas.height || game.ball.y < 0) {
-              game.ball.speed.y *= -1;
-          }
-          if (game.ball.x > canvas.width - PLAYER_WIDTH) {
-              collide(game.computer);
-          } else if (game.ball.x < PLAYER_WIDTH) {
-              collide(game.player);
-          }
-          
-          game.ball.x += game.ball.speed.x;
-          game.ball.y += game.ball.speed.y;
-      }
-        function play() {
-          draw();
-          ballMove();
-          requestAnimationFrame(play);
-      }
-      function changeDirection(playerPosition: any) {
-          var impact = game.ball.y - playerPosition - PLAYER_HEIGHT / 2;
-          var ratio = 100 / (PLAYER_HEIGHT / 2);
-          // Get a value between 0 and 10
-          game.ball.speed.y = Math.round(impact * ratio / 10);
-      }
-      function collide(player: any) {
+
+    function ballMove() {
+        // Rebounds on top and bottom
+        if (game.ball.y > canvas.height || game.ball.y < 0) 
+            game.ball.speed.y *= -1;
+        if (game.ball.x > canvas.width - PLAYER_WIDTH) 
+            collision(game.computer);
+        else if (game.ball.x < PLAYER_WIDTH) 
+            collision(game.player);
+        game.ball.x += game.ball.speed.x;
+        game.ball.y += game.ball.speed.y;
+    }
+        
+    function play() {
+        draw();
+        ballMove();
+        requestAnimationFrame(play);
+    }
+
+    function changeDirection(playerPosition: any) {
+        var impact = game.ball.y - playerPosition - PLAYER_HEIGHT / 2;
+        var ratio = 100 / (PLAYER_HEIGHT / 2);
+        // Get a value between 0 and 10
+        game.ball.speed.y = Math.round(impact * ratio / 10);
+    }
+    
+    function collision(player: any) {
         // The player does not hit the ball
         if (game.ball.y < player.y || game.ball.y > player.y + PLAYER_HEIGHT) {
             // Set ball and players to the center
@@ -93,16 +101,19 @@ window.addEventListener("load", function () {
             
             // Reset speed
             game.ball.speed.x = 2;
+            score1++;
+            score.innerHTML = score1; 
         } else {
             // Increase speed and change direction
-            game.ball.speed.x *= -1.2;
+            game.ball.speed.x *= -1.25;
             changeDirection(player.y);
         }
     }
-    document.addEventListener('click', function () {
-        console.log("gildas le moche");
+
+    click.addEventListener('click', function () {
         text.style.display = "none";
-        click.style.display = "none";
+        click.innerHTML = "Play";
+        //launch.style.display = "block";
         canvas = document.getElementById('canvas');
         canvas.style.display = "block";
         canvas.style.margin = "auto";
@@ -123,24 +134,22 @@ window.addEventListener("load", function () {
                   }
             }
         };
-      canvas.addEventListener('mousemove', playerMove);
-      function playerMove(event: any) {
-      // Get the mouse location in the canvas
-        var canvasLocation = canvas.getBoundingClientRect();
-        var mouseLocation = event.clientY - canvasLocation.y;
-        if (mouseLocation < PLAYER_HEIGHT / 2) {
-            game.player.y = 0;
-        } else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) {
-            game.player.y = canvas.height - PLAYER_HEIGHT;
-        } else {
-            game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
+        canvas.addEventListener('mousemove', playerMove);
+        function playerMove(event: any) {
+            // Get the mouse location in the canvas
+            var canvasLocation = canvas.getBoundingClientRect();
+            var mouseLocation = event.clientY - canvasLocation.y;
+            if (mouseLocation < PLAYER_HEIGHT / 2) 
+                game.player.y = 0;
+            else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) 
+                game.player.y = canvas.height - PLAYER_HEIGHT;
+            else 
+                game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
         }
-      }
-  
-        
         draw();
-        document.addEventListener('click', function () {
-          play();
+        click.addEventListener('click', function () {
+            click.style.display = "none";
+            play();
         });
     });
   });

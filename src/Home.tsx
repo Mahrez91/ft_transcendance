@@ -7,13 +7,14 @@ function Home(){
         <div id="all">
             <h1> Welcome to our FT_Transcendance !</h1>
             <p>If you want to play to a simple pong please use the map 1.</p>
+            <ul><a href="/pong"> simple map</a></ul>
         </div>
     </body>
     );
 }
 
-window.addEventListener("click", function(){
-    let supp: any = this.document.querySelector("#all");
-    supp.style.display= "none";
+window.addEventListener("load", function(){
+    let all: any = this.document.querySelector("#all");
+    all.style.textAlign= "center";
 });
 export default Home;
