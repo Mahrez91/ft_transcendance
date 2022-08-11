@@ -1,18 +1,18 @@
 import React from 'react';
 import './App.css';
 
-function Pong() {
+function Pong2() {
   return (
     <body>
     <h1 id="pong">Pong</h1>
-    <p id ="player"><span id="joueur1">wassim</span><span id="joueur2"> gildas</span></p>
     <main>
         <canvas id="canvas" width="740" height="580"></canvas>
-        <p id ="score">0<span id="score2"> 0</span></p>
+        <p id ="score">0</p>
     </main>
     <p id ="texte">WELCOME TO THE PONG !</p>
     <p id ="play">Click here to play</p>
     <p id ="launch">launch the game</p>
+    <img id='fond' alt="interstellar" src='https://cdn-7.nikon-cdn.com/Images/Learn-Explore/Photography-Techniques/2019/Milky-Way-Photography-Robinson-Krup/Media/Diana-Robinson-Milky-Way-Sitting-Hen-Butte.jpg' />
     </body>
   );
 }
@@ -30,37 +30,43 @@ window.addEventListener("load", function () {
     let pong: any = document.querySelector("#pong");
     let click: any = document.querySelector("#play");
     let launch: any = document.querySelector("#launch");
+    let image: any = document.getElementById('fond');
 
     launch.style.display = "none";
+    image.style.display = "none";
+    score.style.color = "red";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
-    pong.style.fontFamily = "OCR A Std";
+    pong.style.fontFamily = "Apple Chancery";
     text.style.textAlign = "center";
     text.style.fontSize = "250%";
-    text.style.fontFamily = "OCR A Std";
+    text.style.fontFamily = "Apple Chancery";
     click.style.textAlign = "center";
     click.style.fontSize = "250%";
-    click.style.fontFamily = "OCR A Std";
+    click.style.fontFamily = "Apple Chancery";
 
+    
     function draw() {
         console.log("gildas le bg");
         var context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
         // Draw field
-        context.fillStyle = 'black';
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        //context.fillStyle = 'red';
+        //context.fillRect(0, 0, canvas.width, canvas.height);
         // Draw middle line
-        context.strokeStyle = 'white';
+        /* context.strokeStyle = 'black';
         context.beginPath();
         context.moveTo(canvas.width / 2, 0);
         context.lineTo(canvas.width / 2, canvas.height);
-        context.stroke();
+        context.stroke(); */
         // Draw players
         context.fillStyle = 'white';
         context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
         context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
         // Draw ball
         context.beginPath();
-        context.fillStyle = 'white';
+        context.fillStyle = 'yellow';
         context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
         context.fill();
     }
@@ -155,4 +161,4 @@ window.addEventListener("load", function () {
   });
 
 
-export default Pong;
+export default Pong2;

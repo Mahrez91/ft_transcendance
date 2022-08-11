@@ -1,18 +1,18 @@
 import React from 'react';
 import './App.css';
 
-function Pong() {
+function Pong3() {
   return (
     <body>
     <h1 id="pong">Pong</h1>
-    <p id ="player"><span id="joueur1">wassim</span><span id="joueur2"> gildas</span></p>
     <main>
         <canvas id="canvas" width="740" height="580"></canvas>
-        <p id ="score">0<span id="score2"> 0</span></p>
+        <p id ="score">0</p>
     </main>
     <p id ="texte">WELCOME TO THE PONG !</p>
     <p id ="play">Click here to play</p>
     <p id ="launch">launch the game</p>
+    <img id='tennis' alt="nadal king" src='https://us.123rf.com/450wm/sermax55/sermax551811/sermax55181100034/127713212-court-de-tennis-champ-de-couverture-d-herbe-illustration-vectorielle-vue-de-dessus-avec-grille-et-om.jpg?ver=6' />
     </body>
   );
 }
@@ -30,8 +30,11 @@ window.addEventListener("load", function () {
     let pong: any = document.querySelector("#pong");
     let click: any = document.querySelector("#play");
     let launch: any = document.querySelector("#launch");
+    let image: any = document.getElementById('tennis');
 
     launch.style.display = "none";
+    image.style.display = "none";
+    score.style.color = "red";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "OCR A Std";
@@ -42,18 +45,21 @@ window.addEventListener("load", function () {
     click.style.fontSize = "250%";
     click.style.fontFamily = "OCR A Std";
 
+    
     function draw() {
         console.log("gildas le bg");
         var context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
         // Draw field
-        context.fillStyle = 'black';
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        //context.fillStyle = 'red';
+        //context.fillRect(0, 0, canvas.width, canvas.height);
         // Draw middle line
-        context.strokeStyle = 'white';
+        /* context.strokeStyle = '0';
         context.beginPath();
         context.moveTo(canvas.width / 2, 0);
         context.lineTo(canvas.width / 2, canvas.height);
-        context.stroke();
+        context.stroke(); */
         // Draw players
         context.fillStyle = 'white';
         context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
@@ -155,4 +161,4 @@ window.addEventListener("load", function () {
   });
 
 
-export default Pong;
+export default Pong3;
