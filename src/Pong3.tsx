@@ -4,14 +4,13 @@ import './App.css';
 function Pong3() {
   return (
     <body>
-    <h1 id="pong">Pong</h1>
-    <main>
-        <canvas id="canvas" width="740" height="580"></canvas>
-        <p id ="score">0</p>
-    </main>
-    <p id ="texte">WELCOME TO THE PONG !</p>
-    <p id ="play">Click here to play</p>
-    <p id ="launch">launch the game</p>
+    <h1 id="pong-pong">Pong</h1>
+    <p id ="player-pong"><span id="joueur1-pong">wassim</span><span id="joueur2-pong"> gildas</span></p>
+      <main>
+          <canvas id="canvas" width="740" height="580"></canvas>
+          <p> <span id="score-pong"> 0</span><span id="score2-pong"> 0</span></p>
+      </main>
+    <p id ="play-pong3">Click here to play</p>
     <img id='tennis' alt="nadal king" src='https://us.123rf.com/450wm/sermax55/sermax551811/sermax55181100034/127713212-court-de-tennis-champ-de-couverture-d-herbe-illustration-vectorielle-vue-de-dessus-avec-grille-et-om.jpg?ver=6' />
     </body>
   );
@@ -22,25 +21,20 @@ function Pong3() {
 window.addEventListener("load", function () {
     let canvas: any;
     let game: any;
-    let score : any = this.document.querySelector("#score");
+    let score : any = this.document.querySelector("#score-pong");
+    //let score2 : any = this.document.querySelector("#score2-pong");
     let score1 : number = 0;
+    //let scorej2 : number = 0;
     let PLAYER_HEIGHT: number = 100;
     let PLAYER_WIDTH: number = 5;
-    let text: any = document.querySelector("#texte");
-    let pong: any = document.querySelector("#pong");
-    let click: any = document.querySelector("#play");
-    let launch: any = document.querySelector("#launch");
+    let pong: any = document.querySelector("#pong-pong");
+    let click: any = document.querySelector("#play-pong3");
     let image: any = document.getElementById('tennis');
 
-    launch.style.display = "none";
     image.style.display = "none";
-    score.style.color = "red";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "OCR A Std";
-    text.style.textAlign = "center";
-    text.style.fontSize = "250%";
-    text.style.fontFamily = "OCR A Std";
     click.style.textAlign = "center";
     click.style.fontSize = "250%";
     click.style.fontFamily = "OCR A Std";
@@ -66,7 +60,7 @@ window.addEventListener("load", function () {
         context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
         // Draw ball
         context.beginPath();
-        context.fillStyle = 'white';
+        context.fillStyle = 'yellow';
         context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
         context.fill();
     }
@@ -109,6 +103,7 @@ window.addEventListener("load", function () {
             game.ball.speed.x = 2;
             score1++;
             score.innerHTML = score1; 
+            //score2.innerHTML = score1; 
         } else {
             // Increase speed and change direction
             game.ball.speed.x *= -1.25;
@@ -116,10 +111,7 @@ window.addEventListener("load", function () {
         }
     }
 
-    click.addEventListener('click', function () {
-        text.style.display = "none";
         click.innerHTML = "Play";
-        //launch.style.display = "block";
         canvas = document.getElementById('canvas');
         canvas.style.display = "block";
         canvas.style.margin = "auto";
@@ -157,7 +149,6 @@ window.addEventListener("load", function () {
             click.style.display = "none";
             play();
         });
-    });
   });
 
 

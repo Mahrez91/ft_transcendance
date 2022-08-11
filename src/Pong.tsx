@@ -4,15 +4,13 @@ import './App.css';
 function Pong() {
   return (
     <body>
-    <h1 id="pong">Pong</h1>
-    <p id ="player"><span id="joueur1">wassim</span><span id="joueur2"> gildas</span></p>
+    <h1 id="pong-pong">Pong</h1>
+    <p id ="player-pong"><span id="joueur1-pong">wassim</span><span id="joueur2-pong"> gildas</span></p>
     <main>
         <canvas id="canvas" width="740" height="580"></canvas>
-        <p id ="score">0<span id="score2"> 0</span></p>
+        <p> <span id="score-pong"> 0</span><span id="score2-pong"> 0</span></p>
     </main>
-    <p id ="texte">WELCOME TO THE PONG !</p>
-    <p id ="play">Click here to play</p>
-    <p id ="launch">launch the game</p>
+    <p id ="play-pong">Click here to play</p>
     </body>
   );
 }
@@ -22,22 +20,19 @@ function Pong() {
 window.addEventListener("load", function () {
     let canvas: any;
     let game: any;
-    let score : any = this.document.querySelector("#score");
+    let score : any = this.document.querySelector("#score-pong");
+    let score2 : any = this.document.querySelector("#score2-pong");
     let score1 : number = 0;
+    //let scorej2 : number = 0;
     let PLAYER_HEIGHT: number = 100;
     let PLAYER_WIDTH: number = 5;
-    let text: any = document.querySelector("#texte");
-    let pong: any = document.querySelector("#pong");
-    let click: any = document.querySelector("#play");
-    let launch: any = document.querySelector("#launch");
+    let pong: any = document.querySelector("#pong-pong");
+    let click: any = document.querySelector("#play-pong");
 
-    launch.style.display = "none";
+    //score2.style.marginLeft = "69%";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "OCR A Std";
-    text.style.textAlign = "center";
-    text.style.fontSize = "250%";
-    text.style.fontFamily = "OCR A Std";
     click.style.textAlign = "center";
     click.style.fontSize = "250%";
     click.style.fontFamily = "OCR A Std";
@@ -103,17 +98,16 @@ window.addEventListener("load", function () {
             game.ball.speed.x = 2;
             score1++;
             score.innerHTML = score1; 
+            //score2.innerHTML = "score1"; 
         } else {
             // Increase speed and change direction
             game.ball.speed.x *= -1.25;
             changeDirection(player.y);
+            score2.innerHTML = score1; 
         }
     }
 
-    click.addEventListener('click', function () {
-        text.style.display = "none";
         click.innerHTML = "Play";
-        //launch.style.display = "block";
         canvas = document.getElementById('canvas');
         canvas.style.display = "block";
         canvas.style.margin = "auto";
@@ -151,7 +145,6 @@ window.addEventListener("load", function () {
             click.style.display = "none";
             play();
         });
-    });
   });
 
 

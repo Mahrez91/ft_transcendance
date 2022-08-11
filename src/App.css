@@ -13,7 +13,7 @@
   box-shadow: 15px 15px 12px #555;
 }
 
-#pong {
+#pong-pong {
   height: 74px;
   margin: 0;
   margin-bottom: 1%;
@@ -39,6 +39,7 @@
   width:  100vw;
 }
 
+
 #choice {
   height: 400px;
   width: 300px;
@@ -53,21 +54,22 @@
   
 }
 
-#player {
+#player-pong {
   margin-left: 21%;
   font-size: 30px;
   font-family: OCR A Std;
 }
 
-#joueur2 {
+#joueur2-pong {
   margin-left: 45%;
 }
 
-#score2 {
-  margin-left: 69%;
+#score2-pong {
+  font-size: 30px;
+  margin-left: 53%;
 }
 
-#score {
-  margin-left: 21%;
+#score-pong {
+  margin-left: 22%;
   font-size: 30px;
 }
