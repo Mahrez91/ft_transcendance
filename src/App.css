@@ -39,18 +39,31 @@
   width:  100vw;
 }
 
+.bouton {
+  background-color: #008000;
+  border: outset;
+  border-color: #555;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+}
+
+.bouton:hover
+{
+  color : white;
+}
 
 #choice {
   height: 400px;
   width: 300px;
   position: absolute;
-  justify-content: space-around;
   left: 40%;
   margin: 10;
   background : #A9A9A9;
   text-align: center;
   box-shadow: 15px 15px 12px #555;
-  -webkit-appearance: none;
   
 }
 
