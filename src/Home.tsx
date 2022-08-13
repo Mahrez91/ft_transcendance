@@ -3,6 +3,7 @@ import React from 'react'
 
 function Home(){
     return(
+        <body id="body">
         <div id="all">
             <h1 id="bandeau"> Welcome to our FT_Transcendance !</h1>
             <p id ="to-play">If you want to play to a simple pong please use the map 1.</p>
@@ -12,6 +13,8 @@ function Home(){
             <button id="pong3" className="bouton" type="button" onClick={(e) => { e.preventDefault(); window.location.href='/pong3'; }}> tennis pong </button>
             </div>
         </div>
+        </body>
+        
     );
 }
 

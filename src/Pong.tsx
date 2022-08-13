@@ -5,12 +5,11 @@ function Pong() {
   return (
     <body>
     <h1 id="pong-pong">Pong</h1>
-    <p id ="player-pong"><span id="joueur1-pong">wassim</span><span id="joueur2-pong"> gildas</span></p>
+    <p id ="player-pong"><span id="joueur1-pong"> player 1 </span> vs <span id="joueur2-pong"> player 2 </span></p>
     <main>
-        <canvas id="canvas" width="740" height="580"></canvas>
-        <p> <span id="score-pong"> 0</span><span id="score2-pong"> 0</span></p>
+    <p><span id ="play-pong">play</span></p>    <canvas id="canvas" ></canvas>
+        <p id="score"> <span id="score-pong"> </span> - <span id="score2-pong"> </span></p>
     </main>
-    <p id ="play-pong">Click here to play</p>
     </body>
   );
 }
@@ -29,13 +28,17 @@ window.addEventListener("load", function () {
     let PLAYER_WIDTH: number = 5;
     let pong: any = document.querySelector("#pong-pong");
     let click: any = document.querySelector("#play-pong");
+    let player1: any = document.querySelector("#joueur1-pong");
+    let player2: any = document.querySelector("#joueur2-pong");
 
     //score2.style.marginLeft = "69%";
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "OCR A Std";
     click.style.textAlign = "center";
-    click.style.fontSize = "250%";
+    click.style.marginLeft = "46%";
+    click.style.marginBottom = "48%";
+    click.style.fontSize = "205%";
     click.style.fontFamily = "OCR A Std";
 
     function draw() {
@@ -124,6 +127,8 @@ window.addEventListener("load", function () {
         canvas = document.getElementById('canvas');
         canvas.style.display = "block";
         canvas.style.margin = "auto";
+        canvas.width = this.window.innerWidth / 2;
+        canvas.height = this.window.innerHeight / 2;
         game = {
             player: {
                 y: canvas.height / 2 - PLAYER_HEIGHT / 2
@@ -156,6 +161,10 @@ window.addEventListener("load", function () {
         draw();
         click.addEventListener('click', function () {
             click.style.display = "none";
+            player1.innerHTML = "wassim";
+            player2.innerHTML = "gildas";
+            score.innerHTML = "0";
+            score2.innerHTML = "0";
             play();
         });
   });

@@ -7,7 +7,9 @@
 }
 
 #bandeau {
-  height: 12%;
+  width: 100%;
+  background-size: 100% auto !important;
+  font-size: 200%;
   margin: 0;
   line-height: 70px;
   background : #A9A9A9;
@@ -17,13 +19,20 @@
 #pong-pong {
   height: 74px;
   margin: 0;
-  margin-bottom: 1%;
   background : #A9A9A9;
   box-shadow: 15px 15px 12px #555;
 }
+#canvas {
+  width: 70%;
+  height: 40%;
+  max-width: 740px;
+  max-height: 580px;
+}
 
 #to-play {
-  height: 10%;
+  width: 55%;
+  height: auto;
+  background-size: 100% auto !important;
   text-align: center;
   box-shadow: 15px 15px 12px #555;
   margin-left: 22%;
@@ -35,10 +44,9 @@
 }
 
 #all{
+  height: 100vh;
   font-family: OCR A Std;
-  background : #E6E6FA;
-  height: 100vh; 
-  width:  100vw;
+  width:  100%;
 }
 
 .bouton {
@@ -60,9 +68,9 @@
 #choice {
   height: 400px;
   width: 300px;
-  position: absolute;
-  left: 40%;
-  margin: 10;
+  
+  margin-left:auto;
+  margin-right:auto;
   background : #A9A9A9;
   text-align: center;
   box-shadow: 15px 15px 12px #555;
@@ -70,21 +78,12 @@
 }
 
 #player-pong {
-  margin-left: 21%;
+  text-align: center;
   font-size: 30px;
   font-family: OCR A Std;
 }
 
-#joueur2-pong {
-  margin-left: 45%;
-}
-
-#score2-pong {
+#score {
   font-size: 30px;
-  margin-left: 53%;
-}
-
-#score-pong {
-  margin-left: 22%;
-  font-size: 30px;
+  text-align: center;
 }
