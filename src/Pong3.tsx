@@ -8,7 +8,7 @@ function Pong3() {
     <p id ="player-pong"><span id="joueur1-pong"> player 1 </span> vs <span id="joueur2-pong"> player 2 </span></p>
     <main>
     <p><span id ="play-pong3">play</span></p>    <canvas id="canvas" ></canvas>
-    <p id="score"> <span id="score-pong"> </span> - <span id="score2-pong"> </span></p>
+    <p id="score"> <span id="score-pong"> </span> <span id="tiret"> </span> <span id="score2-pong"> </span></p>
       </main>
     <img id='tennis' alt="nadal king" src='https://us.123rf.com/450wm/sermax55/sermax551811/sermax55181100034/127713212-court-de-tennis-champ-de-couverture-d-herbe-illustration-vectorielle-vue-de-dessus-avec-grille-et-om.jpg?ver=6' />
     </body>
@@ -32,6 +32,7 @@ window.addEventListener("load", function () {
     let image: any = document.getElementById('tennis');
     let player1: any = document.querySelector("#joueur1-pong");
     let player2: any = document.querySelector("#joueur2-pong");
+    let tiret: any = document.querySelector("#tiret");
 
     image.style.display = "none";
     pong.style.textAlign = "center";
@@ -157,6 +158,7 @@ window.addEventListener("load", function () {
         player2.innerHTML = "gildas";
         score.innerHTML = "0";
         score2.innerHTML = "0";
+        tiret.innerHTML = "-";
         play();
         });
   });

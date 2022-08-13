@@ -44,9 +44,12 @@
 }
 
 #all{
-  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
   font-family: OCR A Std;
-  width:  100%;
+  background-color : #4682B4;
 }
 
 .bouton {

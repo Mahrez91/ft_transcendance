@@ -8,7 +8,7 @@ function Pong() {
     <p id ="player-pong"><span id="joueur1-pong"> player 1 </span> vs <span id="joueur2-pong"> player 2 </span></p>
     <main>
     <p><span id ="play-pong">play</span></p>    <canvas id="canvas" ></canvas>
-        <p id="score"> <span id="score-pong"> </span> - <span id="score2-pong"> </span></p>
+        <p id="score"> <span id="score-pong"> </span> <span id="tiret"> </span> <span id="score2-pong"> </span></p>
     </main>
     </body>
   );
@@ -30,6 +30,7 @@ window.addEventListener("load", function () {
     let click: any = document.querySelector("#play-pong");
     let player1: any = document.querySelector("#joueur1-pong");
     let player2: any = document.querySelector("#joueur2-pong");
+    let tiret: any = document.querySelector("#tiret");
 
     //score2.style.marginLeft = "69%";
     pong.style.textAlign = "center";
@@ -165,6 +166,7 @@ window.addEventListener("load", function () {
             player2.innerHTML = "gildas";
             score.innerHTML = "0";
             score2.innerHTML = "0";
+            tiret.innerHTML = "-";
             play();
         });
   });

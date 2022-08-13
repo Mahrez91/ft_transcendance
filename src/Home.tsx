@@ -39,6 +39,6 @@ window.addEventListener("load", function(){
     pong2.style.marginBottom = "37%";
     pong3.style.marginRight = "2%";
 
-    all.style.backgroundColor= "#4682B4";
+    all.style.minHeight = this.window.innerHeight;
 });
 export default Home;
