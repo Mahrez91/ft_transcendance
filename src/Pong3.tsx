@@ -43,6 +43,42 @@ window.addEventListener("load", function () {
     click.style.fontSize = "205%";
     click.style.fontFamily = "OCR A Std";
 
+    click.innerHTML = "Play";
+    canvas = document.getElementById('canvas');
+    canvas.style.display = "block";
+    canvas.style.margin = "auto";
+    canvas.width = this.window.innerWidth / 2;
+    canvas.height = this.window.innerHeight / 2.5;
+    game = {
+    player: {
+        y: canvas.height / 2 - PLAYER_HEIGHT / 2
+    },
+    computer: {
+        y: canvas.height / 2 - PLAYER_HEIGHT / 2
+    },
+    ball: {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        r: 5,
+        speed: {
+          x: 2,
+          y: 2
+          }
+    }
+    };
+    draw();
+
+    canvas.addEventListener('mousemove', Move_player);
+
+    click.addEventListener('click', function () {
+        click.style.display = "none";
+        player1.innerHTML = "wassim";
+        player2.innerHTML = "gildas";
+        score.innerHTML = "0";
+        score2.innerHTML = "0";
+        tiret.innerHTML = "-";
+        play();
+    });
     
     function draw() {
         console.log("gildas le bg");
@@ -115,52 +151,17 @@ window.addEventListener("load", function () {
         }
     }
 
-        click.innerHTML = "Play";
-        canvas = document.getElementById('canvas');
-        canvas.style.display = "block";
-        canvas.style.margin = "auto";
-        canvas.width = this.window.innerWidth / 2;
-        canvas.height = this.window.innerHeight / 2.5;
-        game = {
-            player: {
-                y: canvas.height / 2 - PLAYER_HEIGHT / 2
-            },
-            computer: {
-                y: canvas.height / 2 - PLAYER_HEIGHT / 2
-            },
-            ball: {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                r: 5,
-                speed: {
-                  x: 2,
-                  y: 2
-                  }
-            }
-        };
-        canvas.addEventListener('mousemove', Move_player);
-        function Move_player(event: any) {
-            // Get the mouse location in the canvas
-            var canvasLocation = canvas.getBoundingClientRect();
-            var mouseLocation = event.clientY - canvasLocation.y;
-            if (mouseLocation < PLAYER_HEIGHT / 2) 
-                game.player.y = 0;
-            else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) 
-                game.player.y = canvas.height - PLAYER_HEIGHT;
-            else 
-                game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
-        }
-        draw();
-        click.addEventListener('click', function () {
-        click.style.display = "none";
-        player1.innerHTML = "wassim";
-        player2.innerHTML = "gildas";
-        score.innerHTML = "0";
-        score2.innerHTML = "0";
-        tiret.innerHTML = "-";
-        play();
-        });
-  });
-
+    function Move_player(event: any) {
+        // Get the mouse location in the canvas
+        var canvasLocation = canvas.getBoundingClientRect();
+        var mouseLocation = event.clientY - canvasLocation.y;
+        if (mouseLocation < PLAYER_HEIGHT / 2) 
+            game.player.y = 0;
+        else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) 
+            game.player.y = canvas.height - PLAYER_HEIGHT;
+        else 
+            game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
+    }
+});
 
 export default Pong3;

@@ -32,13 +32,9 @@ window.addEventListener("load", function(){
     pong2.style.fontSize = "28px";
     pong3.style.fontSize = "28px";
     
-    
-    
-    pong1.style.width = "25%";
-    pong2.style.width = "25%";
-    pong3.style.width = "25%";
+    pong1.style.width = "29%";
+    pong2.style.width = "29%";
+    pong3.style.width = "29%";
 
-
-    all.style.minHeight = this.window.innerHeight;
 });
 export default Home;
