@@ -9,7 +9,7 @@
 #bandeau {
   width: 100%;
   background-size: 100% auto !important;
-  font-size: 200%;
+  font-size: 300%;
   margin: 0;
   line-height: 70px;
   background : #A9A9A9;
@@ -41,6 +41,7 @@
   margin : 20;
   background : #778899;
   line-height: 60px;
+  font-size: 150%;
 }
 
 #all{
@@ -69,15 +70,17 @@
 }
 
 #choice {
-  height: 400px;
-  width: 300px;
-  
-  margin-left:auto;
+  position:absolute;
+  height: 60%;
+  width: 60%;
+  margin-left:20%;
   margin-right:auto;
   background : #A9A9A9;
-  text-align: center;
   box-shadow: 15px 15px 12px #555;
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
 }
 
 #player-pong {
@@ -89,4 +92,7 @@
 #score {
   font-size: 30px;
   text-align: center;
+  display: flex;
+  justify-content: center;
 }
+

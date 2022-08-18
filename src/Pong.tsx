@@ -36,9 +36,8 @@ window.addEventListener("load", function () {
     pong.style.textAlign = "center";
     pong.style.fontSize = "400%";
     pong.style.fontFamily = "OCR A Std";
-    click.style.textAlign = "center";
-    click.style.marginLeft = "46%";
-    click.style.marginBottom = "48%";
+    click.style.display = "flex";
+    click.style.justifyContent = "center";
     click.style.fontSize = "205%";
     click.style.fontFamily = "OCR A Std";
 

@@ -28,16 +28,16 @@ window.addEventListener("load", function(){
     pong1.style.fontFamily = "OCR A Std";
     pong2.style.fontFamily = "OCR A Std";
     pong3.style.fontFamily = "OCR A Std";
-    pong1.style.fontSize = "18px";
-    pong2.style.fontSize = "18px";
-    pong3.style.fontSize = "18px";
+    pong1.style.fontSize = "28px";
+    pong2.style.fontSize = "28px";
+    pong3.style.fontSize = "28px";
     
-    pong1.style.marginRight = "2%";
-    pong1.style.marginTop = "10%";
-    pong1.style.marginBottom = "37%";
-    pong2.style.marginRight = "2%";
-    pong2.style.marginBottom = "37%";
-    pong3.style.marginRight = "2%";
+    
+    
+    pong1.style.width = "25%";
+    pong2.style.width = "25%";
+    pong3.style.width = "25%";
+
 
     all.style.minHeight = this.window.innerHeight;
 });
