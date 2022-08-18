@@ -120,7 +120,7 @@ window.addEventListener("load", function () {
         canvas.style.display = "block";
         canvas.style.margin = "auto";
         canvas.width = this.window.innerWidth / 2;
-        canvas.height = this.window.innerHeight / 2;
+        canvas.height = this.window.innerHeight / 2.5;
         game = {
             player: {
                 y: canvas.height / 2 - PLAYER_HEIGHT / 2

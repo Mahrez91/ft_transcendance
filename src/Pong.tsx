@@ -128,7 +128,7 @@ window.addEventListener("load", function () {
         canvas.style.display = "block";
         canvas.style.margin = "auto";
         canvas.width = this.window.innerWidth / 2;
-        canvas.height = this.window.innerHeight / 2;
+        canvas.height = this.window.innerHeight / 2.5;
         game = {
             player: {
                 y: canvas.height / 2 - PLAYER_HEIGHT / 2
@@ -147,10 +147,12 @@ window.addEventListener("load", function () {
             }
         };
         canvas.addEventListener('mousemove', Move_player);
+
         function Move_player(event: any) {
             // Get the mouse location in the canvas
             var canvasLocation = canvas.getBoundingClientRect();
             var mouseLocation = event.clientY - canvasLocation.y;
+            
             if (mouseLocation < PLAYER_HEIGHT / 2) 
                 game.player.y = 0;
             else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2) 
