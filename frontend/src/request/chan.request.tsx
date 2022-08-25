@@ -4,8 +4,7 @@ import i_chan from "../interface/chan.interface";
 
 import Error from "../components/request_answer_component/error.component";
 import Loading from "../components/request_answer_component/loading.component";
-
-import { ChanPage } from "../components/page/chan/chan.page";
+import ChanPage from "../components/page/chan/chan.page";
 
 function chanBacktoFront(chan: any)
 {
@@ -16,7 +15,7 @@ function chanBacktoFront(chan: any)
 		ownerId: chan.ownerId,
 		adminsId: chan.adminsId,
 		type: chan.type,
-		// msg
+		msg: chan.msg,
 		bannedId: chan.bannedId,
 		mutedId: chan.mutedId
 	} : {});
@@ -55,7 +54,7 @@ function InitChan()
 	else
 	{
 		console.log(data);
-		return (<ChanPage id={1} />);
+		return (<ChanPage />);
 	}
 }
 

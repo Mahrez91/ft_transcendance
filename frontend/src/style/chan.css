@@ -537,3 +537,13 @@ input {
 	background-color: #fff8;
 	color: var(--main-color-hover);
 }
+
+.msg {
+	max-width: 66%;
+}
+
+.msg--holder {
+	margin: 4px 0 4.2rem 0;
+	width: 100%;
+	overflow-y: scroll;
+}

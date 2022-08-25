@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { MsgDto } from './chan.dto';
 
 @Entity()
 export class Chan
@@ -24,7 +25,8 @@ export class Chan
 	@Column({ type: 'int', nullable: true, default: null })
 	public hash?: number;
 
-	// msg
+	@Column({ type: 'jsonb', nullable: true })
+	public msg?: MsgDto[];
 
 	@Column({ type: 'int', array: true, nullable: null })
 	public bannedId?: number[];

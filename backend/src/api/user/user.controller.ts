@@ -17,6 +17,12 @@ export class UserController
 		return this.service.getUsers();
 	}
 
+	@Get('all')
+	public getUsersWithDefault(): Promise<User[]>
+	{
+		return this.service.getUsersWithDefault();
+	}
+
 	@Get(':id')
 	public getUser(@Param('id', ParseIntPipe) id: number): Promise<User>
 	{

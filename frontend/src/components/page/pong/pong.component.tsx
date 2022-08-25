@@ -5,8 +5,7 @@ import './../../../style/pong.css';
 
 import { AuthContext } from '../../../context/auth.context';
 
-import i_map from '../../../interface/map.interface';
-
+import i_map from '../../../interface/map.interface'
 import { ReactComponent as Back } from '../../../icon/left-svgrepo-com.svg'
 import tennis from './tennis_pong.jpg'
 
@@ -25,7 +24,7 @@ function Pong(props: { map: i_map, goBack: () => void })
 
 	useEffect(() =>
 	{
-		handleCanvas(true, props.map);
+		handleCanvas(true, props.map, "");
 	});
 
 	if (!user || !user.name)
@@ -36,13 +35,29 @@ function Pong(props: { map: i_map, goBack: () => void })
 	props.map.p1 = user.name;
 	props.map.p2 = (loading ? "..." : reqUser.name);
 
-	let test: number;
+	console.log(`joueur 1 = ${props.map.p1} et joueur 2 = ${props.map.p2}`);
+
+	let clientRoom: string;
+	let p2: string;
+	let nameP1 = user.name;
+	var joueur= new Array(2);    
+
+
 	function launchGame()
 	{
 		socket.emit('newPlayer', "");
-		socket.on('start', data=>{
-				setInGame(true);
-				handleCanvas(false, props.map);
+		socket.on('serverToRoom', (data: string)=>{
+			console.log(`je suis ds la room data ${data}`);
+			clientRoom = data;
+			socket.emit('joinRoom', clientRoom, nameP1);
+			socket.on('switchFromServer', (data)=>{
+				joueur = data;
+				console.log(`room creer ok et nom du p2 = ${joueur[0]}`);
+				socket.on('start', ()=>{
+						setInGame(true);
+						handleCanvas(false, props.map, p2);
+				});
+			});
 		});
 	}
 
@@ -85,7 +100,7 @@ const socket = io('http://localhost:3000');
 
 
 
-function handleCanvas(init: boolean, map: i_map)
+function handleCanvas(init: boolean, map: i_map, player2 : string)
 {
 	let canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
 	canvas.style.display = "block";
@@ -95,7 +110,8 @@ function handleCanvas(init: boolean, map: i_map)
 
 	const PLAYER_HEIGHT = (map.type === 'hard' ? 50 : 100);
 	const PLAYER_WIDTH = 5;
-	
+	console.log(`joueur 1 = ${map.p1} et joueur 2 = ${map.p2}`);
+
 	let game = {
 		player: {
 			y: canvas.height / 2 - PLAYER_HEIGHT / 2
@@ -279,7 +295,7 @@ function handleCanvas(init: boolean, map: i_map)
 		var canvasLocation = canvas.getBoundingClientRect();
 		var mouseLocation = event.clientY - canvasLocation.y;
 		
-		if (map.p1! > map.p2!){
+		if (map.p1! > player2){
 			if (mouseLocation < PLAYER_HEIGHT / 2)
 				game.player.y = 0;
 			else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2)

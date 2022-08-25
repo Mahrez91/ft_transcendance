@@ -1,7 +1,7 @@
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Readable } from 'stream';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateUserDto, UpdateUserDto, UpdateUsersAfterGameDto } from './user.dto';
 import { User } from './user.entity';
 
@@ -22,6 +22,11 @@ export class UserService
 	}
 
 	public getUsers(): Promise<User[]>
+	{
+		return this.repository.find({ where: { id: Not(1) } });
+	}
+
+	public getUsersWithDefault(): Promise<User[]>
 	{
 		return this.repository.find();
 	}

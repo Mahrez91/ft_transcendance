@@ -1,3 +1,5 @@
+import i_msg from "./msg.interface";
+
 interface i_chan
 {
 	id?: number;
@@ -7,7 +9,7 @@ interface i_chan
 	adminsId?: number[];
 	type?: 'public' | 'private' | 'protected' | 'direct';
 	hash?: string;
-	// msg
+	msg?: i_msg[];
 	mutedId?: number[];
 	bannedId?: number[];
 }

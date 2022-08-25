@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateChanDto } from './chan.dto';
+import { CreateChanDto, MsgDto } from './chan.dto';
 import { Chan } from './chan.entity';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class ChanService
 			adminsId: [-1],
 			usersId: [-1],
 			type: 'public',
-			// msg init
+			msg: [],
 			bannedId: [],
 			mutedId: []
 		});
@@ -57,6 +57,7 @@ export class ChanService
 		else
 			chan.usersId.push(body.ownerId);
 		chan.type = body.type;
+		chan.msg = [];
 
 		function hashing(pwd: string)
 		{
@@ -114,6 +115,15 @@ export class ChanService
 
 		return await this.repository.save(chan);
 	}*/
+
+	public async sendMsg(id: number, data: MsgDto)
+	{
+		const chan = await this.repository.findOne(id);
+
+		chan.msg.push(data);
+
+		return this.repository.save(chan);
+	}
 
 	public deleteChan(id: number)
 	{

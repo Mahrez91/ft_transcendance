@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './style/root.css'
 import './style/App.css';
@@ -15,7 +15,7 @@ import RequireAuth from './components/requireAuth.component';
 
 import Home from './components/page/home.page';
 import SignUp from './components/page/login/signup.component';
-import { ChanPage, ToChan } from './components/page/chan/chan.page';
+import ChanPage from './components/page/chan/chan.page';
 import UserPage from './components/page/user/user.page';
 import PongPage from './components/page/pong/pong.page';
 
@@ -33,8 +33,7 @@ function App()
 					<Route path="/" element={<Home />} />
 					<Route path="/login" element={<SignUp />} />
 					<Route path="/play" element={<RequireAuth><PongPage /></RequireAuth>} />
-					<Route path="/chan" element={<RequireAuth><ChanPage id={1} /></RequireAuth> /*need to handle if is signup and update connected_user*/} />
-					<Route path="/chan/:id" element={<RequireAuth><ToChan /></RequireAuth> /*need to handle if is signup and update connected_user*/} />
+					<Route path="/chan" element={<RequireAuth><ChanPage /></RequireAuth>} />
 					<Route path="/user" element={<RequireAuth><UserPage /></RequireAuth>} />
 					<Route path="/user/:username" element={<UserPage />} />
 					<Route path="*" element={<NoMatch />} />

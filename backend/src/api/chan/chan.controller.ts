@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseIntPipe, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CreateChanDto } from './chan.dto';
+import { CreateChanDto, MsgDto } from './chan.dto';
 import { Chan } from './chan.entity';
 import { ChanService } from './chan.service';
 
@@ -37,6 +37,12 @@ export class ChanController
 	public createChan(@Body() data: CreateChanDto)
 	{
 		return this.service.createChan(data);
+	}
+
+	@Post('msg/:id')
+	public sendMsg(@Param('id', ParseIntPipe) id: number, @Body() data: MsgDto)
+	{
+		return this.service.sendMsg(id, data);
 	}
 
 	@Delete(':id')

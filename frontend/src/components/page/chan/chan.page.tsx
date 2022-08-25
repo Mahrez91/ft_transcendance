@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import { InitChan, useReqChans } from '../../../request/chan.request';
 import { useReqUsers } from '../../../request/user.request';
 
@@ -6,20 +8,13 @@ import '../../../style/chan.css';
 import Chans from './chan.component';
 import Loading from '../../request_answer_component/loading.component';
 import Error from '../../request_answer_component/error.component';
-import { useParams } from 'react-router-dom';
+import i_chan from '../../../interface/chan.interface';
+import axios from 'axios';
 
-function ToChan()
-{
-	const p_id = useParams().id;
-
-	return (<ChanPage id={(p_id ? +p_id : 1)} />);
-}
-
-function ChanPage(props: { id: number })
+function ChanReq(props: { chans: i_chan[] | null, to_chan: number, callback: (id: number) => void })
 {
 	const reqChans = useReqChans();
 	const reqUsers = useReqUsers();
-
 	if (reqChans.loading || reqUsers.loading)
 		return (<div className='back'><Loading /></div>);
 	else if (reqChans.error)
@@ -34,7 +29,8 @@ function ChanPage(props: { id: number })
 					<InitChan />
 				) : (
 					<div>
-						<Chans chans={reqChans.reqChans} users={reqUsers.reqUsers} to_chan={props.id} />
+						<Chans chans={(props.chans ? props.chans : reqChans.reqChans)} users={reqUsers.reqUsers}
+							to_chan={props.to_chan} callback={props.callback} />
 					</div>
 				)}
 			</div>
@@ -42,4 +38,21 @@ function ChanPage(props: { id: number })
 	}
 }
 
-export { ChanPage, ToChan };
+function ChanPage()
+{
+	const [selectedChan, setSelectedChan] = useState(1);
+	const [chans, setChans] = useState<i_chan[] | null>(null);
+
+	function callback(id: number)
+	{
+		axios.get("http://localhost:3000/chan/").then(res =>
+		{
+			setChans(res.data);
+			setSelectedChan(id);
+		}).catch(err => console.log(err));
+	}
+
+	return (<ChanReq chans={chans} to_chan={selectedChan} callback={callback} />);
+}
+
+export default ChanPage;

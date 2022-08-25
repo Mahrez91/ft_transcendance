@@ -86,13 +86,15 @@ export default function SignIn()
 
 	const getUsers = async () =>
 	{
-		const get_answer = await axios.get("http://localhost:3000/user");
+		const get_answer = await axios.get("http://localhost:3000/user/all");
 		console.log(get_answer);
 		let users: i_user[] = [];
 		for (let i = 0; i < get_answer.data.length; i++)
 			users.push(userBacktoFront(get_answer.data[i]));
 		setUsersData(users);
 	}
+
+	const [id, setId] = React.useState(2);
 
 	return (
 		<div style={{ backgroundColor: "var(--background-color)", height: "calc(100vh - var(--nav-h))" }}>
@@ -132,23 +134,26 @@ export default function SignIn()
 									🚧 test logout 🚧
 								</Button>
 							) : (
-								<Button
-									type="submit"
-									fullWidth
-									variant="contained"
-									sx={{ mt: 3, mb: 2 }}
-									onClick={async () =>
-									{
-										const tmp: i_user | null = await requestUser(1);
-										setUser(tmp);
-										if (tmp)
-											navigate("/");
-									}}
-								>
-									🚧 test login 🚧
-									<br />
-									(will login to user id 1)
-								</Button>
+								<div>
+									<Button
+										type="submit"
+										variant="contained"
+										sx={{ mt: 3, mb: 2 }}
+										onClick={async () =>
+										{
+											const tmp: i_user | null = await requestUser(id);
+											setUser(tmp);
+											if (tmp)
+												navigate("/");
+										}}
+									>
+										🚧 test login 🚧
+										<br />
+										(will login to user id: )
+									</Button>
+									<input className='input--chat' style={{ width: "3rem", textAlign: "center" }}
+										placeholder="id" onChange={(e) => setId(+e.target.value)} value={id} />
+								</div>
 							)}
 						</Box>
 						<div>

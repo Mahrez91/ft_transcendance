@@ -41,4 +41,15 @@ function useReqUsers()
 	return ({ reqUsers, loading, error });
 }
 
-export { userBacktoFront, useReqUser, useReqUsers }
+function useReqUsersWithDefault()
+{
+	const { data, loading, error } = useFetch("http://localhost:3000/user/all", 'get');
+	let reqUsers: i_user[] = [];
+
+	if (!loading && !error && data)
+		for (let i = 0; i < data.length; i++)
+			reqUsers.push(userBacktoFront(data[i]));
+	return ({ reqUsers, loading, error });
+}
+
+export { userBacktoFront, useReqUser, useReqUsers, useReqUsersWithDefault }

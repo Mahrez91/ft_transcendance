@@ -31,7 +31,7 @@ function get_user_in_chan(users_id: number[] | undefined, users: i_user[]): i_us
 	return (ret);
 }
 
-function Chans(props: { chans: i_chan[], users: i_user[], to_chan: number })
+function Chans(props: { chans: i_chan[], users: i_user[], to_chan: number, callback: (id: number) => void })
 {
 	const { user } = useContext(AuthContext);
 	const [search, setSearch] = useState("");
@@ -51,6 +51,13 @@ function Chans(props: { chans: i_chan[], users: i_user[], to_chan: number })
 				<div className='card card--border card--btn card--chan' onClick={() => { setSelectedChan(props.obj) }}>{props.obj.name}</div>
 			</div>
 		);
+	}
+
+	function endOfForm(chan: i_chan)
+	{
+		setShowAddChan(false);
+		setSelectedChan(chan);
+		props.callback((chan.id ? chan.id : 1));
 	}
 
 	return (
@@ -74,7 +81,7 @@ function Chans(props: { chans: i_chan[], users: i_user[], to_chan: number })
 			</div >
 
 			{showAddChan && <Backdrop onClick={() => { setShowAddChan(false) }} />}
-			{showAddChan && user && user.id && <AddChanModal user_id={user.id} onClose={() => { setShowAddChan(false) }} />}
+			{showAddChan && user && user.id && <AddChanModal user_id={user.id} callback={endOfForm} />}
 		</div >
 	);
 }
