@@ -24,7 +24,7 @@ function Pong(props: { map: i_map, goBack: () => void })
 
 	useEffect(() =>
 	{
-		handleCanvas(true, props.map, "");
+		handleCanvas(true, props.map, nameP1, "...", "0");
 	});
 
 	if (!user || !user.name)
@@ -35,27 +35,27 @@ function Pong(props: { map: i_map, goBack: () => void })
 	props.map.p1 = user.name;
 	props.map.p2 = (loading ? "..." : reqUser.name);
 
-	console.log(`joueur 1 = ${props.map.p1} et joueur 2 = ${props.map.p2}`);
 
 	let clientRoom: string;
-	let p2: string;
 	let nameP1 = user.name;
-	var joueur= new Array(2);    
-
+	let joueur:any;    
+	let playbtn:any = document.querySelector("#lets-go");
 
 	function launchGame()
 	{
+		playbtn.style.display = "none";
 		socket.emit('newPlayer', "");
 		socket.on('serverToRoom', (data: string)=>{
 			console.log(`je suis ds la room data ${data}`);
 			clientRoom = data;
 			socket.emit('joinRoom', clientRoom, nameP1);
-			socket.on('switchFromServer', (data)=>{
+			socket.on('switchFromServer', (data:[])=>{
 				joueur = data;
-				console.log(`room creer ok et nom du p2 = ${joueur[0]}`);
+				console.log(`room creer ok et nom du p1 = ${joueur[0]}`);
+				console.log(`room creer ok et nom du p2 = ${joueur[1]}`);
 				socket.on('start', ()=>{
 						setInGame(true);
-						handleCanvas(false, props.map, p2);
+						handleCanvas(false, props.map, joueur[0].toString(), joueur[1].toString(), clientRoom);
 				});
 			});
 		});
@@ -76,11 +76,11 @@ function Pong(props: { map: i_map, goBack: () => void })
 			<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
 			<br />
 			[DEBUG] map chosen: {props.map.type}
-			<p className='pong--player'>{props.map.p1} vs {props.map.p2}</p>
+			<p className='pong--player'> <span id="p1-name">{props.map.p1}</span> vs <span id="p2-name">...</span></p>
 			<div style={{ height: "3rem" }}>
 				{!inGame &&
 					<div style={{ display: "flex", justifyContent: "center" }}>
-						<button className='pong--btn--play' onClick={launchGame}>
+						<button className='pong--btn--play' id="lets-go" onClick={launchGame}>
 							<span id="play-pong">play</span>
 						</button>
 						<br />
@@ -100,7 +100,7 @@ const socket = io('http://localhost:3000');
 
 
 
-function handleCanvas(init: boolean, map: i_map, player2 : string)
+function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : string, clientRoom: string)
 {
 	let canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
 	canvas.style.display = "block";
@@ -110,7 +110,6 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 
 	const PLAYER_HEIGHT = (map.type === 'hard' ? 50 : 100);
 	const PLAYER_WIDTH = 5;
-	console.log(`joueur 1 = ${map.p1} et joueur 2 = ${map.p2}`);
 
 	let game = {
 		player: {
@@ -124,8 +123,8 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 			y: canvas.height / 2,
 			r: 5,
 			speed: {
-				x: 2,
-				y: 2
+				x: 0.5,
+				y: 0.5
 			}
 		}
 	};
@@ -142,6 +141,19 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 	if (init)
 		return;
 
+	let parsing_player: string;
+	let p1name = document.querySelector("#p1-name")!;
+	let p2name = document.querySelector("#p2-name")!;
+
+	if (map.p1 === player1)
+		parsing_player = player2;
+	else	
+		parsing_player = player1;
+	
+	p1name.innerHTML = player1;
+	p2name.innerHTML = player2;
+	console.log(`p1 = ${player1}, p2 = ${player2} et parsing-player = ${parsing_player}`);
+	
 	play();
 
 	canvas.addEventListener('mousemove', Move_player);
@@ -198,15 +210,34 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 			// 		game.computer.y = data;
 			// 		console.log(data);
 			// });
-
-			context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-			context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-			context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+			if (map.p1! === player1){
+				socket.emit('player2-go', clientRoom, game.player.y);
+				socket.on('player2-go', (data)=>{
+					game.computer.y = data;
+				});
+				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+				context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+				context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+				context.beginPath();
+				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+				context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
+				context.fill();
+			}
+			else{
+				socket.emit('player2-go', clientRoom, game.computer.y);
+				socket.on('player2-go', (data)=>{
+					game.player.y = data;
+				});
+				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+				context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+				context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+				context.beginPath();
+				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+				context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
+				context.fill();
+			}
 			// Draw ball
-			context.beginPath();
-			context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-			context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
-			context.fill();
+			
 		}
 		drawMovingPart();
 		
@@ -234,13 +265,13 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 		if (scoreP1 >= 11 || scoreP2 >= 11)
 		{
 			canvas.style.display = "none";
-			postResults(map, scoreP1, scoreP2);
+			postResults(scoreP1, scoreP2, player1, player2);
 			return;
 		}
 
 		draw();
 		Move_ball();
-		requestAnimationFrame(play);
+		setTimeout(play, 1000/1000);
 	}
 
 	function Angle_Direction(playerPosition: any)
@@ -277,14 +308,14 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 			// Reset speed
 
 			if (!ball_start)
-				game.ball.speed.x = -2;
+				game.ball.speed.x = -0.5;
 			else
-				game.ball.speed.x = 2;
+				game.ball.speed.x = 0.5;
 		}
 		else
 		{
 			// Increase speed and change direction
-			game.ball.speed.x *= (map.type === 'hard' ? -1.5 : -1.2);
+			game.ball.speed.x *= (map.type === 'hard' ? -0.5 : -1);
 			Angle_Direction(player.y);
 		}
 	}
@@ -295,7 +326,7 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 		var canvasLocation = canvas.getBoundingClientRect();
 		var mouseLocation = event.clientY - canvasLocation.y;
 		
-		if (map.p1! > player2){
+		if (map.p1! === player1){
 			if (mouseLocation < PLAYER_HEIGHT / 2)
 				game.player.y = 0;
 			else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2)
@@ -315,16 +346,16 @@ function handleCanvas(init: boolean, map: i_map, player2 : string)
 	}
 }
 
-function postResults(map: i_map, scoreP1: number, scoreP2: number)
+function postResults(scoreP1: number, scoreP2: number,  player1 : string, player2 : string)
 {
 	// only the winner will post the match to the api
 	if (scoreP1 === 11)
 	{
-		if (!map.p1 || !map.p2)
+		if ( player1 || player2)
 			return;
 		const match_stats = {
-			winner: map.p1,
-			loser: map.p2,
+			winner: player1,
+			loser: player2,
 			scoreWinner: scoreP1,
 			scoreLoser: scoreP2
 		}

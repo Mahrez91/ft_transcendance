@@ -5,7 +5,7 @@ import '../../style/chan.css'
 
 import { AuthContext } from '../../context/auth.context';
 
-import axios from 'axios';
+//import axios from 'axios';
 
 import i_user from '../../interface/user.interface';
 
