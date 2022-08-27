@@ -123,11 +123,48 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 			y: canvas.height / 2,
 			r: 5,
 			speed: {
-				x: 0.5,
-				y: 0.5
+				x: 1.2,
+				y: 1.2
 			}
 		}
 	};
+
+	let info = {
+		player: {
+			height: PLAYER_HEIGHT
+		},
+		clientRoom: {
+			name: clientRoom
+		},
+		who: {
+			player: 0
+		},
+		mouseLocation: {
+			coordonne: 0
+		},
+		canvas: {
+			height: 0
+		}
+	};
+
+	function Move_player(event: any)
+	{
+		// Get the mouse location in the canvas
+		var canvasLocation = canvas.getBoundingClientRect();
+		var mouseLocation = event.clientY - canvasLocation.y;
+		if (map.p1! === player1){
+			info.who.player = 1;
+			info.mouseLocation.coordonne = mouseLocation;
+			socket.emit('movePlayer', info, mouseLocation, game, canvas.height);
+		}
+		else
+		{
+			info.who.player = 2;
+			info.mouseLocation.coordonne = mouseLocation;
+			socket.emit('movePlayer', info, mouseLocation, game, canvas.height);
+		}
+	}
+
 	let ball_start = false;
 	let scoreP1HTML = document.querySelector("#scoreP1HTML")! as HTMLElement;
 	let scoreP2HTML = document.querySelector("#scoreP2HTML")! as HTMLElement;
@@ -210,32 +247,17 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 			// 		game.computer.y = data;
 			// 		console.log(data);
 			// });
-			if (map.p1! === player1){
-				socket.emit('player2-go', clientRoom, game.player.y);
-				socket.on('player2-go', (data)=>{
-					game.computer.y = data;
-				});
-				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-				context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-				context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-				context.beginPath();
-				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-				context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
-				context.fill();
-			}
-			else{
-				socket.emit('player2-go', clientRoom, game.computer.y);
-				socket.on('player2-go', (data)=>{
-					game.player.y = data;
-				});
-				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-				context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-				context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
-				context.beginPath();
-				context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
-				context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
-				context.fill();
-			}
+
+			socket.on('move-player-draw', (data)=>{
+				game = data;
+			});
+			context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+			context.fillRect(5, game.player.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+			context.fillRect(canvas.width - 5 - PLAYER_WIDTH, game.computer.y, PLAYER_WIDTH, PLAYER_HEIGHT);
+			context.beginPath();
+			context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
+			context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
+			context.fill();
 			// Draw ball
 			
 		}
@@ -271,15 +293,17 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 
 		draw();
 		Move_ball();
-		setTimeout(play, 1000/1000);
+		setTimeout(play, 1000/200);
 	}
+
+	
 
 	function Angle_Direction(playerPosition: any)
 	{
 		var impact = game.ball.y - playerPosition - PLAYER_HEIGHT / 2;
 		var ratio = 100 / (PLAYER_HEIGHT / 2);
 		// Get a value between 0 and 10
-		game.ball.speed.y = Math.round(impact * ratio / 10);
+		game.ball.speed.y = Math.round(impact * ratio / 25);
 	}
 
 	function collision(player: any, game: any)
@@ -311,37 +335,13 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 				game.ball.speed.x = -0.5;
 			else
 				game.ball.speed.x = 0.5;
+			game.ball.speed.y = 0.5;
 		}
 		else
 		{
 			// Increase speed and change direction
-			game.ball.speed.x *= (map.type === 'hard' ? -0.5 : -1);
+			game.ball.speed.x *= (map.type === 'hard' ? -1.4 : -1.05);
 			Angle_Direction(player.y);
-		}
-	}
-
-	function Move_player(event: any)
-	{
-		// Get the mouse location in the canvas
-		var canvasLocation = canvas.getBoundingClientRect();
-		var mouseLocation = event.clientY - canvasLocation.y;
-		
-		if (map.p1! === player1){
-			if (mouseLocation < PLAYER_HEIGHT / 2)
-				game.player.y = 0;
-			else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2)
-				game.player.y = canvas.height - PLAYER_HEIGHT;
-			else
-				game.player.y = mouseLocation - PLAYER_HEIGHT / 2;
-		}
-		else
-		{
-			if (mouseLocation < PLAYER_HEIGHT / 2)
-				game.computer.y = 0;
-			else if (mouseLocation > canvas.height - PLAYER_HEIGHT / 2)
-				game.computer.y = canvas.height - PLAYER_HEIGHT;
-			else
-				game.computer.y = mouseLocation - PLAYER_HEIGHT / 2;
 		}
 	}
 }
