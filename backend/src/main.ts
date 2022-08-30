@@ -4,18 +4,21 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app: NestExpressApplication = await NestFactory.create(AppModule);
-  var cors = require('cors')
-  app.use(cors()) // Use this after the variable declaration
-  const config: ConfigService = app.get(ConfigService);
-  const port: number = config.get<number>('PORT');
+async function bootstrap()
+{
+	const app: NestExpressApplication = await NestFactory.create(AppModule);
+	var cors = require('cors')
+	app.use(cors()) // Use this after the variable declaration
+	app.enableCors({ origin: "*" });
+	const config: ConfigService = app.get(ConfigService);
+	const port: number = config.get<number>('PORT');
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+	app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  await app.listen(port, () => {
-    console.log('[WEB]', config.get<string>('BASE_URL'));
-  });
+	await app.listen(port, () =>
+	{
+		console.log('[WEB]', config.get<string>('BASE_URL'));
+	});
 }
 
 bootstrap();

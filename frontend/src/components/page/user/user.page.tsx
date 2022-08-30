@@ -38,7 +38,7 @@ function uploadFile(user_id: number | undefined, image: File | null)
 
 	console.log("formData: ", formData);
 
-	axios.put("http://localhost:3000/user/pp/" + user_id, formData).then(
+	axios.put("http://backend:3000/user/pp/" + user_id, formData).then(
 		(res) => { console.log(res); },
 		(error) => { console.log(error); }
 	);

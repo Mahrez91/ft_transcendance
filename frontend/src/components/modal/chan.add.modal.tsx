@@ -14,7 +14,7 @@ function SumbitAddChan(props: {
 	callback: (chan: i_chan) => void
 })
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/chan", 'post', {
+	const { data, loading, error } = useFetch("http://backend:3000/chan", 'post', {
 		name: props.name,
 		ownerId: props.user_id,
 		usersId: [props.user_id],

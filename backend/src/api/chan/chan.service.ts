@@ -1,9 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateChanDto, MsgDto } from './chan.dto';
+import { CreateChanDto, MsgDto, PwdDto } from './chan.dto';
 import { Chan } from './chan.entity';
 
+function hashing(pwd: string)
+{
+	let hash = 0;
+	for (let i = 0; i < pwd.length; i++)
+	{
+		const char = pwd.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash; // Convert to 32bit integer
+	}
+	return (hash);
+}
 @Injectable()
 export class ChanService
 {
@@ -59,20 +70,35 @@ export class ChanService
 		chan.type = body.type;
 		chan.msg = [];
 
-		function hashing(pwd: string)
-		{
-			let hash = 0;
-			for (let i = 0; i < pwd.length; i++)
-			{
-				const char = pwd.charCodeAt(i);
-				hash = ((hash << 5) - hash) + char;
-				hash = hash & hash; // Convert to 32bit integer
-			}
-			return (hash);
-		}
 		if (body.type === 'protected' && body.hash)
 			chan.hash = hashing(body.hash);
 		// init msg
+		chan.bannedId = [];
+		chan.mutedId = [];
+
+		return await this.repository.save(chan);
+	}
+
+	public async createDirectChan(body: CreateChanDto): Promise<Chan>
+	{
+		let name: string;
+
+		if (body.usersId[0] < body.usersId[1])
+			name = body.usersId[0] + ' ' + body.usersId[1];
+		else
+			name = body.usersId[1] + ' ' + body.usersId[0];
+
+		if (await this.repository.count({ where: { name: name } }))
+			return await this.repository.findOne({ name: name });
+
+		const chan: Chan = new Chan();
+
+		chan.name = name;
+		chan.ownerId = -1;
+		chan.adminsId = [];
+		chan.usersId = body.usersId;
+		chan.type = 'direct';
+		chan.msg = [];
 		chan.bannedId = [];
 		chan.mutedId = [];
 
@@ -123,6 +149,48 @@ export class ChanService
 		chan.msg.push(data);
 
 		return this.repository.save(chan);
+	}
+
+	public async sendDirectMsg(toUserId: number, data: MsgDto)
+	{
+		let name: string;
+		let chan: Chan;
+
+		if (toUserId < data.userId)
+			name = toUserId.toString() + ' ' + data.userId.toString();
+		else
+			name = data.userId.toString() + ' ' + toUserId.toString();
+
+		if (!await this.repository.count({ where: { name: name } }))
+		{
+			const createChanDto: CreateChanDto = {
+				name: name,
+				ownerId: -1,
+				usersId: [data.userId, toUserId],
+				type: 'direct',
+				hash: ''
+			};
+			chan = await this.createDirectChan(createChanDto);
+		}
+		else
+			chan = await this.repository.findOne({ name: name });
+
+		chan.msg.push(data);
+
+		return this.repository.save(chan);
+	}
+
+	public async tryPwd(id: number, data: PwdDto): Promise<Chan>
+	{
+		const chan = await this.repository.findOne(id);
+
+		if (chan.hash && chan.hash === hashing(data.pwd))
+		{
+			chan.usersId.push(data.userId);
+			return this.repository.save(chan);
+		}
+
+		return chan;
 	}
 
 	public deleteChan(id: number)

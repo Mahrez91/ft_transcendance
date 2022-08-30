@@ -31,12 +31,12 @@ function OptionModal(props: {
 	return (
 		<div onMouseLeave={props.onClose} className='modal--option'>
 			<div>
-				{props.chan.id !== 1 && <button onClick={() => props.options.setShowAdd(true)}><Add /></button>}
-				{props.chan.id !== 1 && <button><Quit fill="#c00" /></button>}
+				{props.chan.id !== 1 && props.chan.type !== 'direct' && <button onClick={() => props.options.setShowAdd(true)}><Add /></button>}
+				{props.chan.id !== 1 && props.chan.type !== 'direct' && <button><Quit fill="#c00" /></button>}
 			</div>
 			<div>
 				<button onClick={() => props.options.setShowChallenge(true)}><Challenge /></button>
-				<button onClick={() => props.options.setShowMute(true)}><Mute fill="#c00" /></button>
+				{props.chan.type !== 'direct' && <button onClick={() => props.options.setShowMute(true)}><Mute fill="#c00" /></button>}
 			</div>
 			<div>
 				{props.is_admin && <button onClick={() => props.options.setShowAdminBan(true)}><AdminBan fill="#c00" /></button>}

@@ -1,12 +1,19 @@
 import { IoAdapter } from "@nestjs/platform-socket.io";
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { Console } from "console";
 import { Server, Socket } from 'socket.io';
 //import i_map from '../../../frontend/src/interface/map.interface'
 
 let player = 0;
 let clientNb = 0;
-let joueur= [];    
-
+let joueur = [];    
+let bdd = [];
+let room = {
+    info: {
+        id: "",
+        room: ""
+    }
+};
 
 	function Move_player( game: any, mouseLocation: number, PLAYER_HEIGHT: number, canvas_height: number, who: number)
 	{
@@ -32,6 +39,7 @@ let joueur= [];
         return(game);
 	}
 
+
 @WebSocketGateway({
     cors:{
         origin: '*',
@@ -53,6 +61,7 @@ export class Matchmaking{
             client.on('joinRoom', (clientRoom, nameP1) => {
                 console.log(nameP1);
                 joueur.push(nameP1);
+                bdd.push(clientRoom, client.id);
                 console.log(`joueur = ${joueur[0]}`);
                 console.log(`joueur = ${joueur[1]}`);
                 if(clientNb % 2 === 0){
@@ -65,15 +74,17 @@ export class Matchmaking{
             
         })
         client.on('movePlayer', (info, mouseLocation, game, canvas_height) =>{
-            console.log(mouseLocation);
             game = Move_player(game, mouseLocation, info.player.height, canvas_height, info.who.player);
             this.server.to(info.clientRoom.name).emit('move-player-draw', game);
             
         });
+    
     }
     
     handleDisconnect(client: Socket){
-        console.log(`client disconnected : ${client.id}`);
+        let pos = bdd.indexOf(client.id.toString());
+        console.table(`client disconnected : ${bdd[pos - 1]}`);
+        this.server.to(bdd[pos - 1]).emit('disconnection');
         player--;
   
     }

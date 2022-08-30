@@ -233,9 +233,20 @@ input {
 }
 
 .card--chan {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	vertical-align: center;
+	text-align: center;
 	font-size: medium;
 	width: 85%;
 	padding: 0.5rem;
+}
+
+.card--chan svg {
+	height: 1.5rem;
+	width: 1.5rem;
 }
 
 .heart {

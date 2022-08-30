@@ -2,6 +2,7 @@ interface i_msg
 {
 	userId: number;
 	username: string;
+	chanId?: string;
 	msg: string;
 	sendAt: Date;
 }

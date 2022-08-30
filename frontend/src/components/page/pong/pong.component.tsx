@@ -6,6 +6,7 @@ import './../../../style/pong.css';
 import { AuthContext } from '../../../context/auth.context';
 
 import i_map from '../../../interface/map.interface'
+import i_pong from '../../../interface/pong-interface'
 import { ReactComponent as Back } from '../../../icon/left-svgrepo-com.svg'
 import tennis from './tennis_pong.jpg'
 
@@ -24,7 +25,7 @@ function Pong(props: { map: i_map, goBack: () => void })
 
 	useEffect(() =>
 	{
-		handleCanvas(true, props.map, nameP1, "...", "0");
+		handleCanvas(true, props.map, bdd_pong, 0);
 	});
 
 	if (!user || !user.name)
@@ -35,27 +36,38 @@ function Pong(props: { map: i_map, goBack: () => void })
 	props.map.p1 = user.name;
 	props.map.p2 = (loading ? "..." : reqUser.name);
 
-
-	let clientRoom: string;
+	let saloon = {
+			player1: "",
+			player2: "",
+			clientRoom: ""
+	};
+	let client_Room: string;
 	let nameP1 = user.name;
-	let joueur:any;    
+	let joueur:any;  
 	let playbtn:any = document.querySelector("#lets-go");
-
+	let bdd_pong: any[] = [];  
+	let game_launch = 0;
 	function launchGame()
 	{
 		playbtn.style.display = "none";
 		socket.emit('newPlayer', "");
 		socket.on('serverToRoom', (data: string)=>{
 			console.log(`je suis ds la room data ${data}`);
-			clientRoom = data;
-			socket.emit('joinRoom', clientRoom, nameP1);
+			client_Room = data;
+			socket.emit('joinRoom', client_Room, nameP1);
 			socket.on('switchFromServer', (data:[])=>{
 				joueur = data;
+				saloon.player1 = joueur[0].toString();
+				saloon.player2 = joueur[1].toString();
+				saloon.clientRoom = client_Room;
+				console.log(saloon);
+				bdd_pong.push(saloon);
 				console.log(`room creer ok et nom du p1 = ${joueur[0]}`);
 				console.log(`room creer ok et nom du p2 = ${joueur[1]}`);
 				socket.on('start', ()=>{
+						game_launch++;
 						setInGame(true);
-						handleCanvas(false, props.map, joueur[0].toString(), joueur[1].toString(), clientRoom);
+						handleCanvas(false, props.map, bdd_pong, game_launch - 1);
 				});
 			});
 		});
@@ -100,7 +112,7 @@ const socket = io('http://localhost:3000');
 
 
 
-function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : string, clientRoom: string)
+function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 {
 	let canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
 	canvas.style.display = "block";
@@ -129,12 +141,28 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		}
 	};
 
+	let ball_start = false;
+	let scoreP1HTML = document.querySelector("#scoreP1HTML")! as HTMLElement;
+	let scoreP2HTML = document.querySelector("#scoreP2HTML")! as HTMLElement;
+	let scoreP1 = 0;
+	let scoreP2 = 0;
+
+	scoreP1HTML.innerText = "0";
+	scoreP2HTML.innerText = "0";
+
+	draw();
+	if (init)
+		return;
+	console.log(bdd[room]);
+	let parsing_player: string;
+	let p1name = document.querySelector("#p1-name")!;
+	let p2name = document.querySelector("#p2-name")!;
 	let info = {
 		player: {
 			height: PLAYER_HEIGHT
 		},
 		clientRoom: {
-			name: clientRoom
+			name: bdd[room].clientRoom 
 		},
 		who: {
 			player: 0
@@ -152,7 +180,7 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		// Get the mouse location in the canvas
 		var canvasLocation = canvas.getBoundingClientRect();
 		var mouseLocation = event.clientY - canvasLocation.y;
-		if (map.p1! === player1){
+		if (map.p1! === bdd[room].player1){
 			info.who.player = 1;
 			info.mouseLocation.coordonne = mouseLocation;
 			socket.emit('movePlayer', info, mouseLocation, game, canvas.height);
@@ -165,31 +193,14 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		}
 	}
 
-	let ball_start = false;
-	let scoreP1HTML = document.querySelector("#scoreP1HTML")! as HTMLElement;
-	let scoreP2HTML = document.querySelector("#scoreP2HTML")! as HTMLElement;
-	let scoreP1 = 0;
-	let scoreP2 = 0;
-
-	scoreP1HTML.innerText = "0";
-	scoreP2HTML.innerText = "0";
-
-	draw();
-	if (init)
-		return;
-
-	let parsing_player: string;
-	let p1name = document.querySelector("#p1-name")!;
-	let p2name = document.querySelector("#p2-name")!;
-
-	if (map.p1 === player1)
-		parsing_player = player2;
+	if (map.p1 === bdd[room].player1)
+		parsing_player = bdd[room].player2;
 	else	
-		parsing_player = player1;
+		parsing_player = bdd[room].player1;
 	
-	p1name.innerHTML = player1;
-	p2name.innerHTML = player2;
-	console.log(`p1 = ${player1}, p2 = ${player2} et parsing-player = ${parsing_player}`);
+	p1name.innerHTML = bdd[room].player1;
+	p2name.innerHTML = bdd[room].player2;
+	console.log(`p1 = ${bdd[room].player1}, p2 = ${bdd[room].player2} et parsing-player = ${parsing_player}`);
 	
 	play();
 
@@ -242,8 +253,8 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		{
 
 			// Draw players
-			// socket.emit('player2-go', game.player.y);
-			// socket.on('player2-go', (data)=>{
+			// socket.emit('bdd[room].player2-go', game.player.y);
+			// socket.on('bdd[room].player2-go', (data)=>{
 			// 		game.computer.y = data;
 			// 		console.log(data);
 			// });
@@ -287,7 +298,7 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		if (scoreP1 >= 11 || scoreP2 >= 11)
 		{
 			canvas.style.display = "none";
-			postResults(scoreP1, scoreP2, player1, player2);
+			postResults(scoreP1, scoreP2, bdd[room].player1, bdd[room].player2);
 			return;
 		}
 
@@ -305,6 +316,13 @@ function handleCanvas(init: boolean, map: i_map, player1 : string, player2 : str
 		// Get a value between 0 and 10
 		game.ball.speed.y = Math.round(impact * ratio / 25);
 	}
+
+	socket.on('disconnection', ()=>{
+		scoreP1HTML.innerText = "11";
+		scoreP2HTML.innerText = "11";
+		scoreP1 = 11;
+		scoreP2 = 11;
+	});
 
 	function collision(player: any, game: any)
 	{

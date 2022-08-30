@@ -7,7 +7,7 @@ function SearchByName(props: { objs: i_user[] | i_chan[], query: string, Constru
 {
 	let ret: JSX.Element[] = [];
 
-	for (let i = 0; i < props.objs.length; i++)
+	for (let i = props.objs.length - 1; i >= 0; i--)
 	{
 		if (props.query.length === 0 || strncmp(props.query, props.objs[i].name!, props.query.length))
 			ret.push(<props.Constructor key={i} obj={props.objs[i]} />);
@@ -24,7 +24,7 @@ function SearchByExactName(props: { objs: i_user[] | i_chan[], query: string, Co
 {
 	let ret: JSX.Element[] = [];
 
-	for (let i = 0; i < Object.keys(props.objs).length; i++)
+	for (let i = props.objs.length - 1; i >= 0; i--)
 	{
 		if (props.objs[i].name === props.query)
 			ret.push(<props.Constructor key={i} obj={props.objs[i]} />);

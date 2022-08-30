@@ -1,20 +1,20 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-//import Avatar from '@mui/material/Avatar';
+import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-//import TextField from '@mui/material/TextField';
-//import FormControlLabel from '@mui/material/FormControlLabel';
-//import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
-//import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from 'axios'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-//import { textAlign } from '@mui/system';
+import { textAlign } from '@mui/system';
 
 import { AuthContext } from '../../../context/auth.context';
 
@@ -27,7 +27,7 @@ async function requestUser(id: number): Promise<i_user | null>
 {
 	let user: i_user | null = null;
 
-	await axios.get("http://localhost:3000/user/" + id).then(res =>
+	await axios.get("http://backend:3000/user/" + id).then(res =>
 	{
 		console.log(res);
 		user = userBacktoFront(res.data);
@@ -72,13 +72,13 @@ export default function SignIn()
 		var url = window.location;
 		var access_token = new URLSearchParams(url.search).get('code');
 		console.log(access_token);
-		const b = await axios.post("http://localhost:3000/user", { token: access_token });
+		const b = await axios.post("http://backend:3000/user", { token: access_token });
 		console.log(b);
 	};
 
 	const tmpCreateUser = async (username: string) =>
 	{
-		const post_answer = await axios.post("http://localhost:3000/user/name/" + username);
+		const post_answer = await axios.post("http://backend:3000/user/name/" + username);
 		console.log(post_answer);
 	}
 
@@ -86,7 +86,7 @@ export default function SignIn()
 
 	const getUsers = async () =>
 	{
-		const get_answer = await axios.get("http://localhost:3000/user/all");
+		const get_answer = await axios.get("http://backend:3000/user/all");
 		console.log(get_answer);
 		let users: i_user[] = [];
 		for (let i = 0; i < get_answer.data.length; i++)

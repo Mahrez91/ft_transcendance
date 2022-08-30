@@ -11,7 +11,7 @@ import Loading from "../../request_answer_component/loading.component";
 
 function MatchHistory(props: { username: string | undefined, users: i_user[] })
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/pong/match/" + props.username, 'get');
+	const { data, loading, error } = useFetch("http://backend:3000/pong/match/" + props.username, 'get');
 
 	if (!props.username)
 		return (<Error msg="didn't find connected user" />);

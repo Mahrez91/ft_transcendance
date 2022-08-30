@@ -32,33 +32,28 @@ D =		$(shell tput sgr0)
 all:	$(NAME)
 
 $(NAME):
-	$(CD) docker-compose up --force-recreate --build
+	docker-compose up --force-recreate --build --detach
 
-clean:
-	$(CD) docker-compose down
+stop:
+	docker-compose down
 
-fclean:
-	@$(CD) docker-compose down -v 2>/dev/null
-	@docker rm -f $(shell docker ps -aq) 2>/dev/null || true
-	@docker rmi -f $(shell docker images -q) 2>/dev/null || true
-	@docker builder prune -f
-	@docker volume prune -f
+clean:	stop
+	docker system prune -af
+	docker volume prune -f
 
 re:	clean all
 
-fre: fclean all
-
 list:
-	@printf "\n\t$(B)$(GRE)container$(D)\n"
-	docker ps -a
+	@printf "\n\t$(B)$(GRE)containers$(D)\n"
+	@docker ps -a
 	@printf "\n\t$(B)$(GRE)images$(D)\n"
-	docker images -a
-	@printf "\n\t$(B)$(GRE)network$(D)\n"
-	docker network ls
-	@printf "\n\t$(B)$(GRE)volume$(D)\n"
-	docker volume ls
+	@docker images -a
+	@printf "\n\t$(B)$(GRE)networks$(D)\n"
+	@docker network ls
+	@printf "\n\t$(B)$(GRE)volumes$(D)\n"
+	@docker volume ls
 	@echo ;
 
-.PHONY: all clean fclean re fre list
+.PHONY: all stop clean re list
 
 # **************************************************************************** #

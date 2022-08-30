@@ -24,7 +24,7 @@ function userBacktoFront(user: any)
 function useReqUser(query: number | string)
 {
 	const { data, loading, error } = useFetch(
-		"http://localhost:3000/user/" + (typeof query === 'number' ? query : "name/" + query), 'get');
+		"http://backend:3000/user/" + (typeof query === 'number' ? query : "name/" + query), 'get');
 
 	const reqUser: i_user = userBacktoFront(data);
 	return ({ reqUser, loading, error });
@@ -32,7 +32,7 @@ function useReqUser(query: number | string)
 
 function useReqUsers()
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/user/", 'get');
+	const { data, loading, error } = useFetch("http://backend:3000/user/", 'get');
 	let reqUsers: i_user[] = [];
 
 	if (!loading && !error && data)
@@ -43,7 +43,7 @@ function useReqUsers()
 
 function useReqUsersWithDefault()
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/user/all", 'get');
+	const { data, loading, error } = useFetch("http://backend:3000/user/all", 'get');
 	let reqUsers: i_user[] = [];
 
 	if (!loading && !error && data)

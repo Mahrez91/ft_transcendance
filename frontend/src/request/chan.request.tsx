@@ -26,7 +26,7 @@ function chanBacktoFront(chan: any)
 function useReqChan(query: number | string)
 {
 	const { data, loading, error } = useFetch(
-		"http://localhost:3000/chan/" + (typeof query === 'number' ? query : "name/" + query), 'get');
+		"http://backend:3000/chan/" + (typeof query === 'number' ? query : "name/" + query), 'get');
 
 	const reqChan: i_chan = chanBacktoFront(data);
 	return ({ reqChan, loading, error });
@@ -34,7 +34,7 @@ function useReqChan(query: number | string)
 
 function useReqChans()
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/chan/", 'get');
+	const { data, loading, error } = useFetch("http://backend:3000/chan/", 'get');
 	let reqChans: i_chan[] = [];
 
 	if (!loading && !error && data)
@@ -45,7 +45,7 @@ function useReqChans()
 
 function InitChan()
 {
-	const { data, loading, error } = useFetch("http://localhost:3000/chan/init", 'get');
+	const { data, loading, error } = useFetch("http://backend:3000/chan/init", 'get');
 
 	if (loading)
 		return (<div className='back'><Loading /></div>);
