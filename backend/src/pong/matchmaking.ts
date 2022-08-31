@@ -5,9 +5,14 @@ import { Server, Socket } from 'socket.io';
 //import i_map from '../../../frontend/src/interface/map.interface'
 
 let player = 0;
-let clientNb = 0;
-let joueur = [];    
+let clientNb_simple = 0;
+let clientNb_hard = 100;
+let clientNb_tennis = 50;
+let joueur_simple = []; 
+let joueur_hard = []; 
+let joueur_tennis = [];    
 let bdd = [];
+let bdd_game = [];
 
 
 	function Move_player( game: any, mouseLocation: number, PLAYER_HEIGHT: number, canvas_height: number, who: number)
@@ -116,31 +121,71 @@ export class Matchmaking{
     
     //connexion
     handleConnection(client: Socket){
-        client.on('newPlayer', ()=>{
+        client.on('newPlayer', (type)=>{
             player++;
             console.log("New client connected: "+client.id);
-            clientNb++;
-            client.join(Math.round(clientNb/2).toString());
-            client.emit('serverToRoom', Math.round(clientNb/2).toString());
-            client.on('joinRoom', (clientRoom, nameP1) => {
-                console.log(nameP1);
-                joueur.push(nameP1);
-                console.log(`joueur = ${joueur[0]}`);
-                console.log(`joueur = ${joueur[1]}`);
-                bdd.push(clientRoom, nameP1, client.id);
-                if(clientNb % 2 === 0){
-                    this.server.to(clientRoom).emit('switchFromServer', joueur);
-                    this.server.emit('start');
-                    joueur.pop();
-                    joueur.pop();
-                }
-            })
-            
+			console.log("type: "+type);
+			if (type === "simple"){
+            	clientNb_simple++;
+				client.join(Math.round(clientNb_simple/2).toString());
+           		client.emit('serverToRoom', Math.round(clientNb_simple/2).toString());
+            	client.on('joinRoom', (clientRoom, nameP1) => {
+					console.log(nameP1);
+					joueur_simple.push(nameP1);
+					console.log(`joueur_simple = ${joueur_simple[0]}`);
+					console.log(`joueur_simple = ${joueur_simple[1]}`);
+					bdd.push(clientRoom, nameP1, client.id);
+					if(clientNb_simple % 2 === 0){
+						this.server.to(clientRoom).emit('switchFromServer', joueur_simple);
+						this.server.to(clientRoom).emit('start');
+						joueur_simple.pop();
+						joueur_simple.pop();
+						bdd_game.push(clientRoom, type, "start");
+					}
+				});
+			}
+			if (type === "hard"){
+            	clientNb_hard++;
+				client.join(Math.round(clientNb_hard/2).toString());
+           		client.emit('serverToRoom', Math.round(clientNb_hard/2).toString());
+            	client.on('joinRoom', (clientRoom, nameP1) => {
+					console.log(nameP1);
+					joueur_hard.push(nameP1);
+					console.log(`joueur_hard = ${joueur_hard[0]}`);
+					console.log(`joueur_hard = ${joueur_hard[1]}`);
+					bdd.push(clientRoom, nameP1, client.id);
+					if(clientNb_hard % 2 === 0){
+						this.server.to(clientRoom).emit('switchFromServer', joueur_hard);
+						this.server.to(clientRoom).emit('start');
+						joueur_hard.pop();
+						joueur_hard.pop();
+						bdd_game.push(clientRoom,type, "start");
+					}
+				});
+			}
+			if (type === "tennis"){
+            	clientNb_tennis++;
+				client.join(Math.round(clientNb_tennis/2).toString());
+           		client.emit('serverToRoom', Math.round(clientNb_tennis/2).toString());
+            	client.on('joinRoom', (clientRoom, nameP1) => {
+					console.log(nameP1);
+					joueur_tennis.push(nameP1);
+					console.log(`joueur_tennis = ${joueur_tennis[0]}`);
+					console.log(`joueur_tennis = ${joueur_tennis[1]}`);
+					bdd.push(clientRoom, nameP1, client.id);
+					if(clientNb_tennis % 2 === 0){
+						this.server.to(clientRoom).emit('switchFromServer', joueur_tennis);
+						this.server.to(clientRoom).emit('start');
+						joueur_tennis.pop();
+						joueur_tennis.pop();
+						bdd_game.push(clientRoom);
+					}
+				});
+			}
         })
         client.on('play', (game, PLAYER_WIDTH, canvas_height, canvas_width, PLAYER_HEIGHT, type ,clientRoom) =>{
             game = Move_ball(game, PLAYER_WIDTH, canvas_height, canvas_width, PLAYER_HEIGHT, type);
             this.server.to(clientRoom).emit('returnPlay', game);
-            //setTimeout(Move_ball(game, PLAYER_WIDTH, canvas_height, canvas_width, PLAYER_HEIGHT, type), 1000/200);
             
         });
         client.on('movePlayer', (info, mouseLocation, game, canvas_height) =>{
@@ -153,7 +198,24 @@ export class Matchmaking{
     
     handleDisconnect(client: Socket){
         let pos = bdd.indexOf(client.id);
+		let restart_room = bdd_game.indexOf(bdd[pos - 2]);
         console.table(`client disconnected : ${bdd[pos - 1]}`);
+		console.log(`statu of the room : ${restart_room}`);
+		if (restart_room === -1 )
+		{
+			if (bdd[pos - 2] < 50){
+				clientNb_simple--;
+				joueur_simple.pop();
+			}
+			else if (bdd[pos - 2] < 100){
+				clientNb_hard--;
+				joueur_hard.pop();
+			}
+			else{	
+				clientNb_tennis--;
+				joueur_tennis.pop();
+			}
+		}
         this.server.to(bdd[pos - 2]).emit('disconnection', bdd[pos - 1]);
         player--;
     }

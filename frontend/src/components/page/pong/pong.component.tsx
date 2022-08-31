@@ -50,27 +50,30 @@ function Pong(props: { map: i_map, goBack: () => void })
 	function launchGame()
 	{
 		playbtn.style.display = "none";
-		socket.emit('newPlayer', "");
-		socket.on('serverToRoom', (data: string)=>{
-			console.log(`je suis ds la room data ${data}`);
-			client_Room = data;
-			socket.emit('joinRoom', client_Room, nameP1);
-			socket.on('switchFromServer', (data:[])=>{
-				joueur = data;
-				saloon.player1 = joueur[0].toString();
-				saloon.player2 = joueur[1].toString();
-				saloon.clientRoom = client_Room;
-				console.log(saloon);
-				bdd_pong.push(saloon);
-				console.log(`room creer ok et nom du p1 = ${joueur[0]}`);
-				console.log(`room creer ok et nom du p2 = ${joueur[1]}`);
-				socket.on('start', ()=>{
-						game_launch++;
-						setInGame(true);
-						handleCanvas(false, props.map, bdd_pong, game_launch - 1);
+		if (props.map.type)
+		{
+			socket.emit('newPlayer', props.map.type.toString());
+			socket.on('serverToRoom', (data: string)=>{
+				console.log(`je suis ds la room data ${data}`);
+				client_Room = data;
+				socket.emit('joinRoom', client_Room, nameP1);
+				socket.on('switchFromServer', (data:[])=>{
+					joueur = data;
+					saloon.player1 = joueur[0].toString();
+					saloon.player2 = joueur[1].toString();
+					saloon.clientRoom = client_Room;
+					console.log(saloon);
+					bdd_pong.push(saloon);
+					console.log(`room creer ok et nom du p1 = ${joueur[0]}`);
+					console.log(`room creer ok et nom du p2 = ${joueur[1]}`);
+					socket.on('start', ()=>{
+							game_launch++;
+							setInGame(true);
+							handleCanvas(false, props.map, bdd_pong, game_launch - 1);
+					});
 				});
 			});
-		});
+		}
 	}
 
 	return (
