@@ -1,0 +1,141 @@
+.pong {
+	height: calc(100vh - var(--nav-h));
+	background-repeat: no-repeat;
+	background-size: cover;
+	font-family: OCR A Std;
+	/*background-color: #4682B4;*/
+	background-color: var(--background-color);
+	text-align: center;
+}
+
+/*#bandeau {
+	width: 100%;
+	background-size: 100% auto !important;
+	font-size: 300%;
+	margin: 0;
+	line-height: 70px;
+	background: #A9A9A9;
+	box-shadow: 15px 15px 12px #555;
+}*/
+
+#canvas {
+	width: 70%;
+	height: 40%;
+	max-width: 740px;
+	max-height: 580px;
+}
+
+.pong--header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	vertical-align: center;
+	/*height: 74px;*/
+	height: 5rem;
+	margin: 0;
+	/*color: #000; should change the color*/
+	background: #A9A9A9;
+	box-shadow: 15px 15px 12px #555;
+	text-align: center;
+	/*font-size: 400%;*/
+	font-family: OCR A Std;
+}
+
+.btn--back {
+	background-color: unset;
+	border: unset;
+}
+
+.btn--back:hover {
+	filter: brightness(100000%);
+}
+
+/* need to change look of it */
+.pong--btn--play {
+	display: flex;
+	justify-content: center;
+	background-color: #fff8;
+	border: unset;
+	border-radius: 1rem;
+	font-size: 1.5rem;
+	font-family: OCR A Std;
+	transition: 300ms;
+}
+
+.pong--btn--play:hover {
+	color: #fff;
+	background-color: #0006;
+	border-radius: unset;
+}
+
+.to-play {
+	font-size: 200%;
+	min-width: 55%;
+	width: auto;
+	padding: 0 1.5rem;
+	background-size: 100% auto !important;
+	text-align: center;
+	box-shadow: 15px 15px 12px #555;
+	border-width: medium;
+	background: #778899;
+	line-height: 60px;
+}
+
+/*#all {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	min-height: 100vh;
+	font-family: OCR A Std;
+	background-color: #4682B4;
+}*/
+
+/* choice probably should be a card */
+.choice {
+	position: absolute;
+	height: 60%;
+	width: 60%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	margin-top: 3rem;
+	padding: 2rem;
+
+	margin-left: 20%;
+
+	background: #A9A9A9;
+	box-shadow: 15px 15px 12px #555;
+}
+
+/* need more var, and maybe even use an already coded btn css */
+.choice button {
+	cursor: pointer;
+	color: #000;
+	font-size: 25px;
+	background-color: #008000;
+	border: outset;
+	border-color: #555;
+	text-align: center;
+	text-decoration: none;
+	width: auto;
+	padding: 0 1rem;
+}
+
+.choice button:hover {
+	color: white;
+}
+
+.pong--player {
+	text-align: center;
+	font-size: 30px;
+	font-family: OCR A Std;
+}
+
+#score {
+	font-size: 30px;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+}
