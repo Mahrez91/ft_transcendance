@@ -13,9 +13,6 @@ let joueur_hard = [];
 let joueur_tennis = [];    
 let bdd = [];
 let bdd_game = [];
-let size_canvas = [];
-let ratio = 1;
-let need_ratio = false;
 
 	function Move_player( game: any, mouseLocation: number, PLAYER_HEIGHT: number, canvas_height: number, who: number)
 	{
@@ -133,11 +130,12 @@ export class Matchmaking{
            		client.emit('serverToRoom', Math.round(clientNb_simple/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1, canvas_size) => {
 					console.log(nameP1);
-					joueur_simple.push(nameP1);
-					console.log(`joueur_simple = ${joueur_simple[0]}`);
-					console.log(`joueur_simple = ${joueur_simple[1]}`);
-					bdd.push(clientRoom, nameP1, client.id);
-					size_canvas.push(canvas_size);
+					if (nameP1 !== joueur_simple[0]){
+						joueur_simple.push(nameP1);
+						console.log(`joueur_simple = ${joueur_simple[0]}`);
+						console.log(`joueur_simple = ${joueur_simple[1]}`);
+						bdd.push(clientRoom, nameP1, client.id);
+					}
 					if(clientNb_simple % 2 === 0){
 						this.server.to(clientRoom).emit('switchFromServer', joueur_simple);
 						this.server.to(clientRoom).emit('start');
@@ -153,10 +151,12 @@ export class Matchmaking{
            		client.emit('serverToRoom', Math.round(clientNb_hard/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1) => {
 					console.log(nameP1);
-					joueur_hard.push(nameP1);
-					console.log(`joueur_hard = ${joueur_hard[0]}`);
-					console.log(`joueur_hard = ${joueur_hard[1]}`);
-					bdd.push(clientRoom, nameP1, client.id);
+					if (nameP1 !== joueur_hard[0] ){
+						joueur_hard.push(nameP1);
+						console.log(`joueur_hard = ${joueur_hard[0]}`);
+						console.log(`joueur_hard = ${joueur_hard[1]}`);
+						bdd.push(clientRoom, nameP1, client.id);
+					}
 					if(clientNb_hard % 2 === 0){
 						this.server.to(clientRoom).emit('switchFromServer', joueur_hard);
 						this.server.to(clientRoom).emit('start');
@@ -172,10 +172,12 @@ export class Matchmaking{
            		client.emit('serverToRoom', Math.round(clientNb_tennis/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1) => {
 					console.log(nameP1);
-					joueur_tennis.push(nameP1);
-					console.log(`joueur_tennis = ${joueur_tennis[0]}`);
-					console.log(`joueur_tennis = ${joueur_tennis[1]}`);
-					bdd.push(clientRoom, nameP1, client.id);
+					if (nameP1 !== joueur_tennis[0]){
+						joueur_tennis.push(nameP1);
+						console.log(`joueur_tennis = ${joueur_tennis[0]}`);
+						console.log(`joueur_tennis = ${joueur_tennis[1]}`);
+						bdd.push(clientRoom, nameP1, client.id);
+					}
 					if(clientNb_tennis % 2 === 0){
 						this.server.to(clientRoom).emit('switchFromServer', joueur_tennis);
 						this.server.to(clientRoom).emit('start');
@@ -196,7 +198,30 @@ export class Matchmaking{
             this.server.to(info.clientRoom.name).emit('move-player-draw', game);
             
         });
-    
+		client.on('back', () =>{
+            let pos = bdd.indexOf(client.id);
+			let restart_room = bdd_game.indexOf(bdd[pos - 2]);
+			console.table(`client disconnected : ${bdd[pos - 1]}`);
+			console.table(`client room : ${bdd[pos - 2]}`);
+			console.log(`statu of the room : ${restart_room}`);
+			if (restart_room === -1 )
+			{
+				if (bdd[pos - 2] < 50){
+					clientNb_simple--;
+					joueur_simple.length = 0;
+				}
+				else if (bdd[pos - 2] < 100){
+					clientNb_tennis--;
+					joueur_tennis.length = 0;
+				}
+				else{	
+					clientNb_hard--;
+					joueur_hard.length = 0;
+				}
+				return ;
+			}
+			this.server.to(bdd[pos - 2]).emit('disconnection', bdd[pos - 1]);
+        });
     }
     
     handleDisconnect(client: Socket){
@@ -208,16 +233,17 @@ export class Matchmaking{
 		{
 			if (bdd[pos - 2] < 50){
 				clientNb_simple--;
-				joueur_simple.pop();
+				joueur_simple.length = 0;
 			}
 			else if (bdd[pos - 2] < 100){
-				clientNb_hard--;
-				joueur_hard.pop();
+				clientNb_tennis--;
+				joueur_tennis.length = 0;
 			}
 			else{	
-				clientNb_tennis--;
-				joueur_tennis.pop();
+				clientNb_hard--;
+				joueur_hard.length = 0;
 			}
+			return ;
 		}
         this.server.to(bdd[pos - 2]).emit('disconnection', bdd[pos - 1]);
         player--;

@@ -50,6 +50,7 @@ function Pong(props: { map: i_map, goBack: () => void })
 	function launchGame()
 	{
 		playbtn.style.display = "none";
+		console.log("hello\n ca va");
 		if (props.map.type)
 		{
 			socket.emit('newPlayer', props.map.type.toString());
@@ -58,9 +59,9 @@ function Pong(props: { map: i_map, goBack: () => void })
 				client_Room = data;
 				socket.emit('joinRoom', client_Room, nameP1, window.innerWidth / 2);
 				socket.on('switchFromServer', (data:[])=>{
-					joueur = data;
-					saloon.player1 = joueur[0].toString();
-					saloon.player2 = joueur[1].toString();
+					joueur = data!;
+					saloon.player1 = joueur[0].toString()!;
+					saloon.player2 = joueur[1].toString()!;
 					saloon.clientRoom = client_Room;
 					console.log(saloon);
 					bdd_pong.push(saloon);
@@ -76,11 +77,19 @@ function Pong(props: { map: i_map, goBack: () => void })
 		}
 	}
 
+	function backFunction()
+	{
+		props.goBack();
+		socket.emit('back');
+		socket.removeAllListeners();
+	}
+
+
 	return (
 		<div className='pong'>
 			<div className='pong--header'>
 				<button className='btn--back'
-					onClick={() => props.goBack()}>
+					onClick={backFunction}>
 					<Back />
 				</button>
 				<h1>Pong</h1>
@@ -106,7 +115,9 @@ function Pong(props: { map: i_map, goBack: () => void })
 				</p>
 			</div>
 			{props.map.type === 'tennis' && <img id='tennis' src={tennis} alt='tennis' style={{ display: "none" }} />}
-			<canvas id="canvas" />
+			<canvas id="canvas" height="580" width="740" />
+			<img id="win" src="https://ak7.picdn.net/shutterstock/videos/34233727/thumb/1.jpg" alt="win"/>
+			<img id="lose" src="https://www.freesoundslibrary.com/wp-content/uploads/2020/07/game-lose-2-720x340.jpg" alt="lose"/>
 		</div >
 	);
 }
@@ -120,11 +131,12 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 	let canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
 	canvas.style.display = "block";
 	canvas.style.margin = "auto";
-	canvas.width = window.innerWidth / 2;
-	canvas.height = window.innerHeight / 2.5;
-
 	const PLAYER_HEIGHT = (map.type === 'hard' ? 50 : 100);
 	const PLAYER_WIDTH = 5;
+	const win = document.querySelector("#win")! as HTMLImageElement;
+	const lose = document.querySelector("#lose")! as HTMLImageElement;
+	lose.style.display = "none";
+	win.style.display = "none";
 
 	let game = {
 		player: {
@@ -237,8 +249,26 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 		});
 		if (scoreP1 >= 11 || scoreP2 >= 11)
 		{
-			canvas.style.display = "none";
-			postResults(scoreP1, scoreP2, bdd[room].player1, bdd[room].player2);
+			let context = canvas.getContext('2d')! as CanvasRenderingContext2D;
+			if (game.score.p1 >= 11 ){
+				if(bdd[room].player1 === map.p1){
+					context.drawImage(win, 0, 0, canvas.width, canvas.height);
+				}
+				else{
+					context.drawImage(lose, 0, 0, canvas.width, canvas.height);
+				}
+			}
+			if (game.score.p2 >= 11 ){
+				if(bdd[room].player2 === map.p1){
+					context.drawImage(win, 0, 0, canvas.width, canvas.height);
+				}
+				else{
+					context.drawImage(lose, 0, 0, canvas.width, canvas.height);
+				}
+			}
+			//canvas.style.display = "none";
+			console.log(map.p1);
+			postResults(game.score.p1, game.score.p2, bdd[room].player1, bdd[room].player2);
 			return;
 		}
 		draw();
@@ -250,10 +280,8 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 
 	function draw()
 	{
-		canvas.width = window.innerWidth / 2;
-		canvas.height = window.innerHeight / 2.5;
-		let context = canvas.getContext('2d')!;
 		const img = document.querySelector("#tennis")! as HTMLImageElement;
+		let context = canvas.getContext('2d')! as CanvasRenderingContext2D;
 		if (map.type === 'simple' || map.type === 'hard')
 		{
 			// Draw field
@@ -321,10 +349,12 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 		if (data === bdd[room].player1){
 			scoreP2HTML.innerText = "11";
 			scoreP1 = 11;
+			game.score.p2 = 11;
 		}
 		else{
 			scoreP1HTML.innerText = "11";
 			scoreP2 = 11;
+			game.score.p1 = 11;
 		}
 	});
 
