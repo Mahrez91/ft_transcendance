@@ -215,50 +215,22 @@ export class Matchmaking
 			this.server.to(info.clientRoom.name).emit('move-player-draw', game);
 
 		});
-		client.on('back', () =>
-		{
-			let pos = bdd.indexOf(client.id);
-			let restart_room = bdd_game.indexOf(bdd[pos - 2]);
-			console.table(`client disconnected : ${bdd[pos - 1]}`);
-			//console.table(`client room : ${bdd[pos - 2]}`);
-			console.log(`statu of the room : ${restart_room}`);
-			if (restart_room === -1)
-			{
-				if (bdd[pos - 2] < 50)
-				{
-					clientNb_simple--;
-					joueur_simple.pop();
-				}
-				else if (bdd[pos - 2] < 100)
-				{
-					clientNb_tennis--;
-					joueur_tennis.pop();
-				}
-				else
-				{
-					clientNb_hard--;
-					joueur_hard.pop();
-				}
-				return;
-			}
-			this.server.to(bdd[pos - 2]).emit('disconnection', bdd[pos - 1]);
-		});
 	}
 
 	handleDisconnect(client: Socket)
 	{
 		let pos = bdd.indexOf(client.id);
 		let restart_room = bdd_game.indexOf(bdd[pos - 2]);
-		console.table(`client disconnected : ${bdd[pos - 1]}`);
+		console.table(`client disconnected : ${bdd[pos - 2]}`);
 		console.log(`statu of the room : ${restart_room}`);
 		if (restart_room === -1)
 		{
-			if (bdd[pos - 2] < 50)
+			if (bdd[pos - 2] < 25)
 			{
 				clientNb_simple--;
 				joueur_simple.pop();
 			}
-			else if (bdd[pos - 2] < 100)
+			else if (bdd[pos - 2] < 50)
 			{
 				clientNb_tennis--;
 				joueur_tennis.pop();
