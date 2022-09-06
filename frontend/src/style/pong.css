@@ -18,12 +18,12 @@
 	box-shadow: 15px 15px 12px #555;
 }*/
 
-/* #canvas {
-	width: 70%;
-	height: 40%;
+#canvas {
 	max-width: 740px;
 	max-height: 580px;
-} */
+	min-width: 600px;
+	min-height: 480px;
+} 
 
 .pong--header {
 	display: flex;

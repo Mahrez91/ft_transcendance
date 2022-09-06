@@ -122,26 +122,27 @@ export class Matchmaking{
     handleConnection(client: Socket){
         client.on('newPlayer', (type)=>{
             player++;
-            console.log("New client connected: "+client.id);
-			console.log("type: "+type);
+            //console.log("New client connected: "+client.id);
+			//console.log("type: "+type);
 			if (type === "simple"){
             	clientNb_simple++;
 				client.join(Math.round(clientNb_simple/2).toString());
            		client.emit('serverToRoom', Math.round(clientNb_simple/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1, canvas_size) => {
-					console.log(nameP1);
-					if (nameP1 !== joueur_simple[0]){
+					if (nameP1 !== joueur_simple[0] && joueur_simple[1] === undefined ){
 						joueur_simple.push(nameP1);
-						console.log(`joueur_simple = ${joueur_simple[0]}`);
-						console.log(`joueur_simple = ${joueur_simple[1]}`);
 						bdd.push(clientRoom, nameP1, client.id);
 					}
 					if(clientNb_simple % 2 === 0){
-						this.server.to(clientRoom).emit('switchFromServer', joueur_simple);
-						this.server.to(clientRoom).emit('start');
-						joueur_simple.pop();
-						joueur_simple.pop();
-						bdd_game.push(clientRoom, type, "start");
+						if (joueur_simple[0] !== undefined && joueur_simple[1] !== undefined){
+							this.server.to(clientRoom).emit('switchFromServer', joueur_simple);
+							this.server.to(clientRoom).emit('start');
+							console.log(`joueur_simple = ${joueur_simple[0]}`);
+							console.log(`joueur_simple = ${joueur_simple[1]}`);
+							joueur_simple.pop();
+							joueur_simple.pop();
+							bdd_game.push(clientRoom, type, "start");
+						}
 					}
 				});
 			}
@@ -150,7 +151,7 @@ export class Matchmaking{
 				client.join(Math.round(clientNb_hard/2).toString());
            		client.emit('serverToRoom', Math.round(clientNb_hard/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1) => {
-					console.log(nameP1);
+					//console.log(nameP1);
 					if (nameP1 !== joueur_hard[0] ){
 						joueur_hard.push(nameP1);
 						console.log(`joueur_hard = ${joueur_hard[0]}`);
@@ -171,7 +172,7 @@ export class Matchmaking{
 				client.join(Math.round(clientNb_tennis/2).toString());
            		client.emit('serverToRoom', Math.round(clientNb_tennis/2).toString());
             	client.on('joinRoom', (clientRoom, nameP1) => {
-					console.log(nameP1);
+					//console.log(nameP1);
 					if (nameP1 !== joueur_tennis[0]){
 						joueur_tennis.push(nameP1);
 						console.log(`joueur_tennis = ${joueur_tennis[0]}`);
@@ -202,21 +203,21 @@ export class Matchmaking{
             let pos = bdd.indexOf(client.id);
 			let restart_room = bdd_game.indexOf(bdd[pos - 2]);
 			console.table(`client disconnected : ${bdd[pos - 1]}`);
-			console.table(`client room : ${bdd[pos - 2]}`);
-			console.log(`statu of the room : ${restart_room}`);
+			//console.table(`client room : ${bdd[pos - 2]}`);
+			//console.log(`statu of the room : ${restart_room}`);
 			if (restart_room === -1 )
 			{
 				if (bdd[pos - 2] < 50){
 					clientNb_simple--;
-					joueur_simple.length = 0;
+					joueur_simple.pop();
 				}
 				else if (bdd[pos - 2] < 100){
 					clientNb_tennis--;
-					joueur_tennis.length = 0;
+					joueur_tennis.pop();
 				}
 				else{	
 					clientNb_hard--;
-					joueur_hard.length = 0;
+					joueur_hard .pop();
 				}
 				return ;
 			}

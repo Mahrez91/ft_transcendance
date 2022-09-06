@@ -13,21 +13,22 @@ import tennis from './tennis_pong.jpg'
 import Error from '../../request_answer_component/error.component';
 import { useReqUser } from '../../../request/user.request';
 
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 
 
-function Pong(props: { map: i_map, goBack: () => void })
-{
+function Pong(props: { map: i_map, goBack: () => void }) {
+	const { user } = useContext(AuthContext);
 	const { reqUser, loading, error } = useReqUser(2);
 	const [inGame, setInGame] = useState(false);
-	const { user } = useContext(AuthContext);
+	const [inPlay, setInPlay] = useState(false);
+	const [gameLaunch, setGameLaunch] = useState(0);
+	const [socket] = useState(io('http://localhost:3000'));
 
-	useEffect(() =>
-	{
-		handleCanvas(true, props.map, bdd_pong, 0);
+	useEffect(() => {
+		handleCanvas(true, props.map, bdd_pong, 0, socket);
 	});
-
+	
 	if (!user || !user.name)
 		return (<Error msg="failed to get connected user" />);
 	else if (error)
@@ -37,53 +38,29 @@ function Pong(props: { map: i_map, goBack: () => void })
 	props.map.p2 = (loading ? "..." : reqUser.name);
 
 	let saloon = {
-			player1: "",
-			player2: "",
-			clientRoom: ""
+		player1: "",
+		player2: "",
+		clientRoom: ""
 	};
-	let client_Room: string;
-	let nameP1 = user.name;
-	let joueur:any;  
-	let playbtn:any = document.querySelector("#lets-go");
-	let bdd_pong: any[] = [];  
-	let game_launch = 0;
-	function launchGame()
-	{
-		playbtn.style.display = "none";
-		console.log("hello\n ca va");
-		if (props.map.type)
-		{
-			socket.emit('newPlayer', props.map.type.toString());
-			socket.on('serverToRoom', (data: string)=>{
-				console.log(`je suis ds la room data ${data}`);
-				client_Room = data;
-				socket.emit('joinRoom', client_Room, nameP1, window.innerWidth / 2);
-				socket.on('switchFromServer', (data:[])=>{
-					joueur = data!;
-					saloon.player1 = joueur[0].toString()!;
-					saloon.player2 = joueur[1].toString()!;
-					saloon.clientRoom = client_Room;
-					console.log(saloon);
-					bdd_pong.push(saloon);
-					console.log(`room creer ok et nom du p1 = ${joueur[0]}`);
-					console.log(`room creer ok et nom du p2 = ${joueur[1]}`);
-					socket.on('start', ()=>{
-							game_launch++;
-							setInGame(true);
-							handleCanvas(false, props.map, bdd_pong, game_launch - 1);
-					});
-				});
-			});
-		}
-	}
 
-	function backFunction()
-	{
+	let nameP1 = user.name;
+	let bdd_pong: any[] = [];
+
+
+	// 	props.socket.on('chatToClient', (msg: i_msg) =>
+	// 	{
+	// 		console.log("received at:", msg.chanId, msg);
+	// 		setIcomingMsg(msg);
+	// 	});
+
+
+
+	function backFunction() {
 		props.goBack();
 		socket.emit('back');
-		socket.removeAllListeners();
+		socket.disconnect();
 	}
-
+	
 
 	return (
 		<div className='pong'>
@@ -104,7 +81,7 @@ function Pong(props: { map: i_map, goBack: () => void })
 			<div style={{ height: "3rem" }}>
 				{!inGame &&
 					<div style={{ display: "flex", justifyContent: "center" }}>
-						<button className='pong--btn--play' id="lets-go" onClick={launchGame}>
+						<button className='pong--btn--play' id="lets-go" onClick={() => setInPlay(true)}>
 							<span id="play-pong">play</span>
 						</button>
 						<br />
@@ -116,18 +93,49 @@ function Pong(props: { map: i_map, goBack: () => void })
 			</div>
 			{props.map.type === 'tennis' && <img id='tennis' src={tennis} alt='tennis' style={{ display: "none" }} />}
 			<canvas id="canvas" height="580" width="740" />
-			<img id="win" src="https://ak7.picdn.net/shutterstock/videos/34233727/thumb/1.jpg" alt="win"/>
-			<img id="lose" src="https://www.freesoundslibrary.com/wp-content/uploads/2020/07/game-lose-2-720x340.jpg" alt="lose"/>
+			<img id="win" src="https://ak7.picdn.net/shutterstock/videos/34233727/thumb/1.jpg" alt="win" />
+			<img id="lose" src="https://www.freesoundslibrary.com/wp-content/uploads/2020/07/game-lose-2-720x340.jpg" alt="lose" />
+			{inPlay && <LaunchGame  map={props.map} nameP1={nameP1} saloon={saloon} incGameLaunch={() => {setGameLaunch(gameLaunch + 1); return gameLaunch;}} setInGame={setInGame} socket={socket} />}
 		</div >
 	);
 }
 
-const socket = io('http://localhost:3000');
+function LaunchGame(props: { map: i_map, nameP1: string, saloon: any, incGameLaunch: () => number, setInGame:React.Dispatch<React.SetStateAction<boolean>>, socket:Socket}) {
+	props.socket.connect();
+	let client_Room: string;
+	let joueur: any;
+	let playbtn = document.querySelector("#lets-go")! as HTMLElement; 
+	let bdd_pong: any[] = [];
+	playbtn.style.display = "none";
+	console.log("hello\n ca va");
+	useEffect(() => {
+		if (props.map.type) {
+			props.socket.emit('newPlayer', props.map.type.toString());
+			props.socket.on('serverToRoom', (data: string) => {
+				console.log(`je suis ds la room data ${data}`);
+				client_Room = data;
+				props.socket.emit('joinRoom', client_Room, props.nameP1, window.innerWidth / 2);
+			});
+			props.socket.on('switchFromServer', (data: []) => {
+				joueur = data!;
+				props.saloon.player1 = joueur[0].toString()!;
+				props.saloon.player2 = joueur[1].toString()!;
+				props.saloon.clientRoom = client_Room;
+				console.log(props.saloon);
+				bdd_pong.push(props.saloon);
+			});
+			props.socket.on('start', () => {
+				console.table(bdd_pong);
+				props.setInGame(true);
+				handleCanvas(false, props.map, bdd_pong, props.incGameLaunch(), props.socket);
+			});
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}
+	}, []);
+	return <div />
+}
 
-
-
-function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
-{
+function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number, socket: Socket) {
 	let canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
 	canvas.style.display = "block";
 	canvas.style.margin = "auto";
@@ -152,7 +160,7 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			ratio: 1,
 			speed: {
 				x: 1,
-				y:  1
+				y: 1
 			}
 		},
 		score: {
@@ -183,7 +191,7 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			height: PLAYER_HEIGHT
 		},
 		clientRoom: {
-			name: bdd[room].clientRoom 
+			name: bdd[room].clientRoom
 		},
 		who: {
 			player: 0
@@ -196,18 +204,16 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 		}
 	};
 
-	function Move_player(event: any)
-	{
+	function Move_player(event: any) {
 		// Get the mouse location in the canvas
 		var canvasLocation = canvas.getBoundingClientRect();
 		var mouseLocation = event.clientY - canvasLocation.y;
-		if (map.p1! === bdd[room].player1){
+		if (map.p1! === bdd[room].player1) {
 			info.who.player = 1;
 			info.mouseLocation.coordonne = mouseLocation;
 			socket.emit('movePlayer', info, mouseLocation, game, canvas.height);
 		}
-		else
-		{
+		else {
 			info.who.player = 2;
 			info.mouseLocation.coordonne = mouseLocation;
 			socket.emit('movePlayer', info, mouseLocation, game, canvas.height);
@@ -216,53 +222,49 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 
 	if (map.p1 === bdd[room].player1)
 		parsing_player = bdd[room].player2;
-	else	
+	else
 		parsing_player = bdd[room].player1;
-	
+
 	p1name.innerHTML = bdd[room].player1;
 	p2name.innerHTML = bdd[room].player2;
 	console.log(`p1 = ${bdd[room].player1}, p2 = ${bdd[room].player2} et parsing-player = ${parsing_player}`);
-	
+
 	play();
 
-	function play()
-	{
+	function play() {
 		socket.emit('play', game, PLAYER_WIDTH, canvas.height, canvas.width, PLAYER_HEIGHT, map.type.toString(), bdd[room].clientRoom);
-		socket.on('returnPlay', (data)=>{
+		socket.on('returnPlay', (data) => {
 			game = data;
-			if (game.score.p1 !== game.score.p1_temp || game.score.p2 !== game.score.p2_temp)
-			{
-				if (game.score.p1 !== game.score.p1_temp){
+			if (game.score.p1 !== game.score.p1_temp || game.score.p2 !== game.score.p2_temp) {
+				if (game.score.p1 !== game.score.p1_temp) {
 					game.score.p1_temp++;
 					scoreP1HTML.innerText = game.score.p1.toString();
 				}
-				else{
+				else {
 					game.score.p2_temp++;
 					scoreP2HTML.innerText = game.score.p2.toString();
 				}
 			}
-			if (game.score.p1 >= 11 || game.score.p2 >= 11)
-			{
+			if (game.score.p1 >= 11 || game.score.p2 >= 11) {
 				scoreP1 = 11;
 				scoreP2 = 11;
 			}
 		});
-		if (scoreP1 >= 11 || scoreP2 >= 11)
-		{
+		if (scoreP1 >= 11 || scoreP2 >= 11) {
 			let context = canvas.getContext('2d')! as CanvasRenderingContext2D;
-			if (game.score.p1 >= 11 ){
-				if(bdd[room].player1 === map.p1){
+			if (game.score.p1 >= 11) {
+				if (bdd[room].player1 === map.p1) {
 					context.drawImage(win, 0, 0, canvas.width, canvas.height);
 				}
-				else{
+				else {
 					context.drawImage(lose, 0, 0, canvas.width, canvas.height);
 				}
 			}
-			if (game.score.p2 >= 11 ){
-				if(bdd[room].player2 === map.p1){
+			if (game.score.p2 >= 11) {
+				if (bdd[room].player2 === map.p1) {
 					context.drawImage(win, 0, 0, canvas.width, canvas.height);
 				}
-				else{
+				else {
 					context.drawImage(lose, 0, 0, canvas.width, canvas.height);
 				}
 			}
@@ -272,18 +274,16 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			return;
 		}
 		draw();
-		setTimeout(play, 1000/200);
+		setTimeout(play, 1000 / 200);
 	}
 
 	canvas.addEventListener('mousemove', Move_player);
 
 
-	function draw()
-	{
+	function draw() {
 		const img = document.querySelector("#tennis")! as HTMLImageElement;
 		let context = canvas.getContext('2d')! as CanvasRenderingContext2D;
-		if (map.type === 'simple' || map.type === 'hard')
-		{
+		if (map.type === 'simple' || map.type === 'hard') {
 			// Draw field
 			context.fillStyle = 'black';
 			context.fillRect(0, 0, canvas.width, canvas.height);
@@ -294,14 +294,10 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			context.lineTo(canvas.width / 2, canvas.height);
 			context.stroke();
 		}
-		else
-		{
-			try
-			{
-				if (init)
-				{
-					img.addEventListener('load', function ()
-					{
+		else {
+			try {
+				if (init) {
+					img.addEventListener('load', function () {
 						context.drawImage(img, 0, 0, canvas.width, canvas.height);
 						drawMovingPart();
 					});
@@ -309,8 +305,7 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 				else
 					context.drawImage(img, 0, 0, canvas.width, canvas.height);
 			}
-			catch (e)
-			{
+			catch (e) {
 				//console.log(e);
 				//window.location.href = '/youlose';
 				game.score.p2 = 11;
@@ -318,8 +313,7 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			}
 		}
 
-		function drawMovingPart()
-		{
+		function drawMovingPart() {
 
 			// Draw players
 			// socket.emit('bdd[room].player2-go', game.player.y);
@@ -328,7 +322,7 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			// 		console.log(data);
 			// });
 
-			socket.on('move-player-draw', (data)=>{
+			socket.on('move-player-draw', (data) => {
 				game = data;
 			});
 			context.fillStyle = (map.type === 'hard' ? 'red' : 'white');
@@ -339,34 +333,30 @@ function handleCanvas(init: boolean, map: i_map, bdd: any[] = [], room: number)
 			context.arc(game.ball.x, game.ball.y, game.ball.r, 0, Math.PI * 2, false);
 			context.fill();
 			// Draw ball
-			
+
 		}
 		drawMovingPart();
-		
+
 	}
 
-	socket.on('disconnection', (data)=>{
-		if (data === bdd[room].player1){
+	socket.on('disconnection', (data) => {
+		if (data === bdd[room].player1) {
 			scoreP2HTML.innerText = "11";
 			scoreP1 = 11;
 			game.score.p2 = 11;
 		}
-		else{
+		else {
 			scoreP1HTML.innerText = "11";
 			scoreP2 = 11;
 			game.score.p1 = 11;
 		}
 	});
-
-	
 }
 
-function postResults(scoreP1: number, scoreP2: number,  player1 : string, player2 : string)
-{
+function postResults(scoreP1: number, scoreP2: number, player1: string, player2: string) {
 	// only the winner will post the match to the api
-	if (scoreP1 === 11)
-	{
-		if ( player1 || player2)
+	if (scoreP1 === 11) {
+		if (player1 || player2)
 			return;
 		const match_stats = {
 			winner: player1,
