@@ -145,7 +145,7 @@ export class Matchmaking
 					{
 						this.server.to(clientRoom).emit('switchFromServer', joueur_simple);
 						this.server.to(clientRoom).emit('start');
-						match = joueur_simple[0].toString() + " vs " + joueur_simple[1].toString() + " in salon " + clientRoom.toString();
+						match = joueur_simple[0].toString() + " vs " + joueur_simple[1].toString() + " salon " + clientRoom.toString() + " simple";
 						console.log(match);
 						this.server.emit('live', match);
 						console.log(`joueur_simple = ${joueur_simple[0]}`);
@@ -174,7 +174,7 @@ export class Matchmaking
 					{
 						this.server.to(clientRoom).emit('switchFromServer', joueur_hard);
 						this.server.to(clientRoom).emit('start');
-						match = joueur_hard[0].toString() + " vs " + joueur_hard[1].toString();
+						match = joueur_hard[0].toString() + " vs " + joueur_hard[1].toString() + " salon " + clientRoom.toString() + " hard";
 						this.server.emit('live', match);
 						joueur_hard.pop();
 						joueur_hard.pop();
@@ -200,7 +200,7 @@ export class Matchmaking
 					{
 						this.server.to(clientRoom).emit('switchFromServer', joueur_tennis);
 						this.server.to(clientRoom).emit('start');
-						match = joueur_tennis[0].toString() + " vs " + joueur_tennis[1].toString();
+						match = joueur_tennis[0].toString() + " vs " + joueur_tennis[1].toString() + " salon " + clientRoom.toString()+ " tennis";
 						this.server.emit('live', match);
 						joueur_tennis.pop();
 						joueur_tennis.pop();
@@ -222,11 +222,14 @@ export class Matchmaking
 			this.server.to(info.clientRoom.name).emit('move-player-draw', game);
 
 		});
-		client.on('spectate', (game, PLAYER_WIDTH, canvas_height, canvas_width, PLAYER_HEIGHT, type, clientRoom) =>
+		client.on('viewer', (clientRoom) =>
 		{
-			game = Move_ball(game, PLAYER_WIDTH, canvas_height, canvas_width, PLAYER_HEIGHT, type);
-			this.server.to(clientRoom).emit('returnPlay', game);
-
+			client.join(clientRoom.toString());
+			this.server.to(clientRoom.toString()).emit('start-stream');
+		});
+		client.on('finish', (clientRoom) =>
+		{
+			this.server.to(clientRoom.toString()).emit('end-viewer');
 		});
 	}
 

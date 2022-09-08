@@ -20,6 +20,7 @@ import ChanPage from './components/page/chan/chan.page';
 import UserPage from './components/page/user/user.page';
 import PongPage from './components/page/pong/pong.page';
 import CreateDefaultUser from './request/user.create.default';
+import PongView from './components/page/pong/pong.view';
 
 function App()
 {
@@ -37,6 +38,7 @@ function App()
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/login" element={<SignUp />} />
+						<Route path="/view/:id" element={<RequireAuth><PongView goBack={() => { }}/></RequireAuth>} />
 						<Route path="/play" element={<RequireAuth><PongPage /></RequireAuth>} />
 						<Route path="/chan" element={<RequireAuth><ChanPage /></RequireAuth>} />
 						<Route path="/user" element={<RequireAuth><UserPage /></RequireAuth>} />

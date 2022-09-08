@@ -297,6 +297,7 @@ function handleCanvas(apiUrl: string, username: string, init: boolean, map: i_ma
 					context.drawImage(lose, 0, 0, canvas.width, canvas.height);
 				}
 			}
+			socket.emit('finish', bdd[room].clientRoom);
 			//canvas.style.display = "none";
 			console.log(map.p1);
 			postResults(apiUrl, username, game.score.p1, game.score.p2, bdd[room].player1, bdd[room].player2);
